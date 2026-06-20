@@ -3,7 +3,8 @@
 
 @theme {
   --font-sans: "Plus Jakarta Sans", "Inter", sans-serif;
-  --font-display: "Syne", "Outfit", sans-serif;
+  --font-display: "Plus Jakarta Sans", "Inter", sans-serif;
+  --font-hero-display: "Syne", "Outfit", sans-serif;
   --font-cursive: "Pacifico", cursive;
   --font-mono: "JetBrains Mono", monospace;
   

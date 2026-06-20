@@ -7,9 +7,11 @@ interface NavbarProps {
   onOpenResume: () => void;
   isProjectView: boolean;
   onBackToHome: () => void;
+  isDarkMode?: boolean;
+  onToggleDarkMode?: () => void;
 }
 
-export default function Navbar({ onNavigate, activeSection, onOpenResume, isProjectView, onBackToHome }: NavbarProps) {
+export default function Navbar({ onNavigate, activeSection, onOpenResume, isProjectView, onBackToHome, isDarkMode, onToggleDarkMode }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -51,7 +53,7 @@ export default function Navbar({ onNavigate, activeSection, onOpenResume, isProj
       id="navbar"
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-white/85 backdrop-blur-md shadow-sm border-b border-gray-100 py-3'
+          ? 'bg-white/85 dark:bg-[#07060F]/85 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-gray-800 py-3'
           : 'bg-transparent py-5'
       }`}
     >
@@ -66,13 +68,13 @@ export default function Navbar({ onNavigate, activeSection, onOpenResume, isProj
             <span className="text-3xl font-cursive tracking-normal bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 bg-clip-text text-transparent filter drop-shadow-[0.5px_1px_1px_rgba(168,85,247,0.15)] group-hover:scale-105 transition-transform duration-300">
               Spurthi
             </span>
-            <span className="text-2xl font-light font-sans text-gray-400 group-hover:text-purple-600 transition-colors ml-1">
+            <span className="text-2xl font-light font-sans text-gray-400 dark:text-gray-500 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors ml-1">
               Mulkanuri
             </span>
           </div>
 
           {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center gap-1 bg-gray-50/70 p-1 rounded-full border border-gray-100">
+          <div className="hidden md:flex items-center gap-1 bg-gray-50/70 dark:bg-gray-950/40 p-1 rounded-full border border-gray-100 dark:border-gray-850">
             {navLinks.map((link) => {
               const active = !isProjectView && activeSection === link.id;
               return (
@@ -81,8 +83,8 @@ export default function Navbar({ onNavigate, activeSection, onOpenResume, isProj
                   onClick={() => handleLinkClick(link.id)}
                   className={`relative px-4 py-1.5 rounded-full font-sans text-xs sm:text-sm font-semibold tracking-wide transition-all duration-300 cursor-pointer ${
                     active
-                      ? 'text-purple-600 bg-white shadow-sm'
-                      : 'text-gray-500 hover:text-gray-900 hover:bg-white/40'
+                      ? 'text-purple-600 dark:text-purple-400 bg-white dark:bg-slate-900 shadow-sm'
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-white/40 dark:hover:bg-slate-850/40'
                   }`}
                 >
                   {link.label}
@@ -105,18 +107,37 @@ export default function Navbar({ onNavigate, activeSection, onOpenResume, isProj
               <span>Download Resume</span>
             </button>
             
-            {/* Soft decorative visual light mode placeholder indicator */}
-            <div className="w-9 h-9 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:text-yellow-500 hover:bg-yellow-50 transition-colors cursor-pointer" title="Light theme optimized">
-              <Sun className="w-4 h-4 animate-spin-slow text-yellow-500" />
-            </div>
+            {/* Functional theme toggler */}
+            <button
+              onClick={onToggleDarkMode}
+              className="w-9 h-9 rounded-full bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700 flex items-center justify-center text-gray-500 dark:text-gray-300 hover:text-yellow-500 dark:hover:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-slate-700 transition-all duration-300 cursor-pointer"
+              title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {isDarkMode ? (
+                <Sun className="w-4 h-4 text-yellow-500 animate-pulse" />
+              ) : (
+                <Moon className="w-4 h-4 text-purple-600" />
+              )}
+            </button>
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center gap-2">
+          <div className="md:hidden flex items-center gap-1.5">
+            <button
+              onClick={onToggleDarkMode}
+              className="p-1.5 rounded-full bg-gray-50 dark:bg-slate-800 text-gray-500 dark:text-gray-300 border border-gray-100 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+              title="Toggle Theme"
+            >
+              {isDarkMode ? (
+                <Sun className="w-4 h-4 text-yellow-500" />
+              ) : (
+                <Moon className="w-4 h-4 text-purple-600" />
+              )}
+            </button>
             <button
               onClick={onOpenResume}
               id="btn-resume-download-mobile"
-              className="p-1.5 rounded-full bg-gradient-to-r from-purple-50 to-pink-50 text-purple-600 border border-purple-100/60 hover:bg-purple-100 transition-colors"
+              className="p-1.5 rounded-full bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 text-purple-600 dark:text-purple-400 border border-purple-100/60 dark:border-purple-900/40 hover:bg-purple-100 dark:hover:bg-purple-900/10 transition-colors"
               title="Download Resume"
             >
               <FileText className="w-4 h-4" />
@@ -134,7 +155,7 @@ export default function Navbar({ onNavigate, activeSection, onOpenResume, isProj
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white/95 backdrop-blur-lg border-b border-gray-100 shadow-xl absolute top-full left-0 w-full py-4 px-4 transition-all duration-300">
+        <div className="md:hidden bg-white/95 dark:bg-[#07060F]/95 backdrop-blur-lg border-b border-gray-100 dark:border-gray-800 shadow-xl absolute top-full left-0 w-full py-4 px-4 transition-all duration-300">
           <div className="flex flex-col gap-1">
             {navLinks.map((link) => {
               const active = !isProjectView && activeSection === link.id;
@@ -144,8 +165,8 @@ export default function Navbar({ onNavigate, activeSection, onOpenResume, isProj
                   onClick={() => handleLinkClick(link.id)}
                   className={`w-full text-left px-4 py-3 rounded-2xl font-sans text-sm font-bold tracking-wide transition-all ${
                     active
-                      ? 'text-purple-600 bg-purple-50'
-                      : 'text-gray-600 hover:text-gray-950 hover:bg-gray-50'
+                      ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-950 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800/40'
                   }`}
                 >
                   {link.label}

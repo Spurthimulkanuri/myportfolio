@@ -36,6 +36,7 @@ import {
 import { PERSONAL_INFO, SKILLS_DATA, PROJECTS_DATA, EXPERIENCE_DATA, CERTIFICATIONS_DATA, ACHIEVEMENTS_DATA } from './data';
 import { Project } from './types';
 import Navbar from './components/Navbar';
+import Skills from './components/Skills';
 
 export default function App() {
   const [activeSection, setActiveSection] = useState('home');
@@ -43,14 +44,31 @@ export default function App() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   const [fadeRole, setFadeRole] = useState(true);
+
+  // Adaptable Theme State
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('theme');
+      if (saved) return saved === 'dark';
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode]);
   
   // Contact form state
   const [formState, setFormState] = useState({ name: '', email: '', company: '', message: '' });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-
-  // Active skills filter category
-  const [selectedSkillCategory, setSelectedSkillCategory] = useState<string>('All');
 
   // Role cycler logic
   useEffect(() => {
@@ -162,12 +180,12 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF9FC] text-[#1E293B] font-sans selection:bg-purple-100 selection:text-purple-950 overflow-x-hidden">
+    <div className="min-h-screen bg-[#FAF9FC] dark:bg-[#07060F] text-[#1E293B] dark:text-[#E2E8F0] font-sans selection:bg-purple-100 dark:selection:bg-purple-900 selection:text-purple-950 dark:selection:text-purple-100 overflow-x-hidden transition-colors duration-300">
       {/* Dynamic decorative visual glow rings for high premium texture */}
       <div className="absolute top-0 left-0 w-full h-[650px] overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-5%] right-[-5%] w-[550px] h-[550px] rounded-full bg-purple-200/40 blur-[130px]" />
-        <div className="absolute top-[25%] left-[-10%] w-[450px] h-[450px] rounded-full bg-blue-200/30 blur-[110px]" />
-        <div className="absolute top-[45%] right-[15%] w-[350px] h-[350px] rounded-full bg-pink-100/20 blur-[100px]" />
+        <div className="absolute top-[-5%] right-[-5%] w-[550px] h-[550px] rounded-full bg-purple-200/40 dark:bg-purple-950/10 blur-[130px] transition-colors duration-300" />
+        <div className="absolute top-[25%] left-[-10%] w-[450px] h-[450px] rounded-full bg-blue-200/30 dark:bg-blue-950/10 blur-[110px] transition-colors duration-300" />
+        <div className="absolute top-[45%] right-[15%] w-[350px] h-[350px] rounded-full bg-pink-100/20 dark:bg-pink-950/10 blur-[100px] transition-colors duration-300" />
       </div>
 
       {/* Navigation */}
@@ -177,6 +195,8 @@ export default function App() {
         onOpenResume={() => setIsResumeModalOpen(true)}
         isProjectView={selectedProject !== null}
         onBackToHome={() => setSelectedProject(null)}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={() => setIsDarkMode(prev => !prev)}
       />
 
       <div className="pt-20">
@@ -200,8 +220,8 @@ export default function App() {
 
                   {/* Primary Greeting Headline matching the image design */}
                   <div className="space-y-1">
-                    <span className="text-xl font-extrabold text-blue-900 tracking-tight font-display">Hi, I'm</span>
-                    <h1 className="text-5xl sm:text-6xl md:text-7xl font-display font-extrabold tracking-tight text-gray-900 leading-none">
+                    <span className="text-xl font-extrabold text-blue-900 tracking-tight font-hero-display">Hi, I'm</span>
+                    <h1 className="text-5xl sm:text-6xl md:text-7xl font-hero-display font-extrabold tracking-tight text-gray-900 leading-none">
                       <span className="bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 bg-clip-text text-transparent filter drop-shadow-sm">
                         Spurthi Mulkanuri
                       </span>
@@ -321,7 +341,7 @@ export default function App() {
                       <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-gradient-to-tr from-indigo-500/15 via-purple-500/10 to-pink-500/15 flex items-center justify-center p-3 relative">
                         <div className="w-full h-full rounded-full bg-white flex items-center justify-center shadow-inner relative overflow-hidden">
                           {/* Inner professional smart profile symbol */}
-                          <div className="absolute inset-0 bg-gradient-to-tr from-purple-600 via-pink-500 to-indigo-500 flex flex-col items-center justify-center text-white font-display select-none">
+                          <div className="absolute inset-0 bg-gradient-to-tr from-purple-600 via-pink-500 to-indigo-500 flex flex-col items-center justify-center text-white font-hero-display select-none">
                             <span className="text-4xl sm:text-5xl font-extrabold tracking-tight">SM</span>
                             <span className="text-[10px] sm:text-xs font-mono tracking-wider font-semibold opacity-90 mt-1">DATA SCIENCE</span>
                           </div>
@@ -531,105 +551,156 @@ export default function App() {
                       key={project.id}
                       className="bg-white rounded-[24px] border border-gray-200 overflow-hidden shadow-xs hover:shadow-lg hover:border-purple-200 transition-all duration-400 flex flex-col group transform hover:-translate-y-1"
                     >
-                      {/* Project Visual block header with realistic, highly relevant mockups and Unsplash photos */}
-                      <div className="relative pb-[58%] overflow-hidden bg-slate-900 border-b border-gray-200 flex items-center justify-center group/img">
-                        
+                      {/* Project Visual block header with realistic, highly relevant mockups based on Image 1 and Image 2 */}
+                      <div className="relative pb-[65%] overflow-hidden border-b border-gray-200/60 select-none bg-slate-50">
                         {index === 0 ? (
-                          /* Project 1: Counselor Visuals featuring serene nature-mindfulness photography & chatbot overlays */
-                          <div className="absolute inset-0 w-full h-full">
-                            {/* Realistic related image background */}
-                            <img 
-                              src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80" 
-                              alt="Mindfulness and EQ Counseling" 
-                              className="w-full h-full object-cover brightness-[0.4] contrast-[1.05] group-hover/img:scale-105 transition-transform duration-700"
-                              referrerPolicy="no-referrer"
-                            />
-                            {/* Dark/violet cybernetic overlay layer */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-purple-950/85 via-slate-900/40 to-transparent" />
-                            
-                            {/* Bespoke interactive counselor chat simulator mockup */}
-                            <div className="absolute inset-x-4 bottom-4 top-4 rounded-xl border border-white/10 bg-white/10 backdrop-blur-md p-3.5 flex flex-col justify-between text-white select-none shadow-2xl">
-                              <div className="flex justify-between items-center pb-1.5 border-b border-white/10">
-                                <div className="flex items-center gap-1.5">
-                                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                                  <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-purple-200">EQ Mistral-7B Session</span>
-                                </div>
-                                <span className="px-1.5 py-0.5 rounded bg-purple-500/30 text-[8px] font-mono font-extrabold uppercase text-purple-300">Active Fine-tune</span>
-                              </div>
+                          /* Project 1: Counselor Visuals Replicating Image 1 (AI Counselor Dialogue & Serene Vibe) */
+                          <div className="absolute inset-0 w-full h-full bg-gradient-to-tr from-[#ece9fc] via-[#f5f3ff] to-[#f9f8fe] p-3 flex flex-col justify-between overflow-hidden">
+                            {/* Floating decorative sparkles/circles */}
+                            <div className="absolute left-[30%] top-[10%] w-2 h-2 rounded-full bg-purple-300 animate-pulse" />
+                            <div className="absolute right-[25%] top-[15%] w-3 h-3 rounded-full bg-pink-200 animate-ping [animation-duration:4s]" />
+                            <div className="absolute right-[40%] bottom-[20%] w-2 h-2 rounded-full bg-indigo-200 animate-pulse" />
 
-                              {/* Simulated Chat Dialogue */}
-                              <div className="space-y-1.5 my-auto overflow-hidden">
-                                <div className="flex items-start gap-1.5">
-                                  <div className="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center text-[10px] shrink-0 text-purple-800 font-bold font-sans">US</div>
-                                  <div className="bg-white/15 px-2.5 py-1 rounded-r-lg rounded-bl-lg max-w-[80%]">
-                                    <p className="text-[9.5px] leading-snug font-medium text-slate-100">"I'm feeling burnt out by massive data pipelines today..."</p>
-                                  </div>
-                                </div>
-                                
-                                <div className="flex items-start gap-1.5 justify-end">
-                                  <div className="bg-purple-600/70 px-2.5 py-1 rounded-l-lg rounded-br-lg max-w-[80%] border border-purple-500/30 text-right">
-                                    <p className="text-[9.5px] leading-snug font-medium text-white">"I hear you. Let's step back, breathe deeply, and align."</p>
-                                    <span className="text-[7.5px] text-purple-200 font-mono italic block mt-0.5">Sentiment score: 0.94 EQ Stable</span>
-                                  </div>
-                                  <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-pink-500 to-purple-500 flex items-center justify-center text-[9px] shrink-0 font-bold">🧘‍♀️</div>
+                            {/* Top Mockup Header Bar */}
+                            <div className="flex items-center justify-between bg-white/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/80 shadow-xs z-10">
+                              <div className="flex items-center gap-1.5">
+                                <span className="w-5 h-5 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center text-[10px] text-white font-extrabold shadow-sm">🤖</span>
+                                <span className="text-[11px] font-black text-slate-800 tracking-tight font-sans">AI Counselor</span>
+                              </div>
+                              <span className="text-[9px] font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">EQ System Live</span>
+                            </div>
+
+                            {/* Dialogue Area */}
+                            <div className="relative z-10 flex flex-col gap-2.5 my-auto max-w-full">
+                              
+                              {/* Counselor Chat Bubble */}
+                              <div className="flex gap-2 items-start max-w-[85%]">
+                                <div className="w-6 h-6 rounded-full bg-indigo-100 border border-indigo-200 shrink-0 flex items-center justify-center text-xs shadow-xs">🧘‍♀️</div>
+                                <div className="bg-white p-2.5 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 relative">
+                                  <p className="text-[10px] sm:text-[11px] leading-relaxed text-slate-700 font-sans font-medium">
+                                    I understand how you feel. It's okay to take things one step at a time. You are stronger than you think. <span className="text-pink-500">🌸</span>
+                                  </p>
                                 </div>
                               </div>
 
-                              {/* Terminal Status line */}
-                              <div className="flex justify-between items-center text-[8px] font-mono text-purple-300 opacity-90">
-                                <span>🚀 LoRA Adaptor Active</span>
-                                <span>Response: 184ms</span>
+                              {/* Intermediate Meditating character (Beautiful CSS Vector graphic represented elegantly) */}
+                              <div className="absolute left-[54%] top-[-8px] -translate-x-1/2 w-28 h-28 opacity-85 pointer-events-none scale-110 flex flex-col items-center justify-center">
+                                {/* Vector illustration of meditating head and shoulders */}
+                                <div className="w-10 h-10 rounded-full bg-[#fce7f3] border-2 border-purple-200 relative shadow-sm overflow-hidden flex items-center justify-center bg-[linear-gradient(to_bottom,transparent_30%,#e9d5ff_30%)]">
+                                  <div className="w-8 h-8 rounded-full bg-[#fae8ff] mt-auto relative" />
+                                </div>
+                                <div className="w-14 h-8 bg-[#f5f3ff] rounded-t-3xl border-2 border-purple-100 shadow-sm mt-0.5 flex items-center justify-center overflow-hidden">
+                                  <div className="w-3 h-3 rounded-full bg-purple-400 mt-2 animate-pulse" />
+                                </div>
+                                <div className="w-16 h-1 bg-purple-300 rounded-full blur-[1px] mt-1 opacity-60" />
+                              </div>
+
+                              {/* Heart floating near avatar */}
+                              <div className="absolute right-[22%] top-[10%] text-sm text-pink-500 animate-bounce [animation-duration:3s]">❤️</div>
+
+                              {/* User Chat Bubble */}
+                              <div className="flex gap-2 items-start justify-end max-w-[82%] ml-auto z-15">
+                                <div className="bg-[#f3f0ff] p-2.5 rounded-2xl rounded-tr-none shadow-sm border border-purple-100 relative text-right">
+                                  <span className="text-[8px] font-mono text-indigo-500 block font-bold mb-0.5">YOU</span>
+                                  <p className="text-[10px] sm:text-[11px] leading-relaxed text-slate-700 font-sans font-medium">
+                                    I feel stressed and overwhelmed with everything...
+                                  </p>
+                                </div>
+                                <div className="w-6 h-6 rounded-full bg-[#ede9fe] border border-purple-200 shrink-0 flex items-center justify-center text-xs shadow-xs">👤</div>
+                              </div>
+
+                            </div>
+
+                            {/* Active Candle Mockup bottom left */}
+                            <div className="flex justify-between items-end relative z-10 px-2">
+                              <div className="flex items-center gap-1.5 pb-1">
+                                <div className="w-4 h-6 bg-slate-800 rounded-md relative flex items-center justify-center shadow-md border border-slate-700">
+                                  <div className="w-1.5 h-3 bg-amber-100 rounded-full absolute bottom-1.5" />
+                                  <div className="w-2 h-2 bg-amber-500 rounded-full blur-[1px] absolute top-[-2px] animate-pulse" />
+                                </div>
+                                <span className="text-[8.5px] font-mono font-semibold text-slate-500">Therapeutic Ambiance Active</span>
+                              </div>
+                              
+                              <div className="flex gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                                <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-ping" />
                               </div>
                             </div>
+
                           </div>
                         ) : (
-                          /* Project 2: Social-to-Lead chatbot visuals featuring a premium tech analytics background & pipeline overlay */
-                          <div className="absolute inset-0 w-full h-full">
-                            {/* Realistic related image background */}
-                            <img 
-                              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80" 
-                              alt="Analytical Sales conversion dashboard" 
-                              className="w-full h-full object-cover brightness-[0.35] contrast-[1.1] group-hover/img:scale-105 transition-transform duration-700"
-                              referrerPolicy="no-referrer"
-                            />
-                            {/* Dark/cyan cybernetic overlay layer */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-cyan-950/85 via-slate-900/40 to-transparent" />
-
-                            {/* Automation Pipeline mockup card */}
-                            <div className="absolute inset-x-4 bottom-4 top-4 rounded-xl border border-white/10 bg-white/10 backdrop-blur-md p-3.5 flex flex-col justify-between text-white select-none shadow-2xl">
-                              <div className="flex justify-between items-center pb-1.5 border-b border-white/10">
-                                <div className="flex items-center gap-1.5">
-                                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                                  <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-cyan-200">AI Lead Extraction Pipeline</span>
-                                </div>
-                                <span className="px-1.5 py-0.5 rounded bg-cyan-500/30 text-[8px] font-mono font-extrabold uppercase text-cyan-300">CRM Enabled</span>
-                              </div>
-
-                              {/* Automated Pipeline execution status log */}
-                              <div className="space-y-1 my-auto font-mono text-[9px] text-slate-300">
-                                <div className="flex items-center justify-between bg-white/5 p-1 rounded border border-white/5">
-                                  <span className="text-cyan-300">⚡ Input query</span>
-                                  <span className="text-white">"Need python developer for next-gen ML"</span>
-                                </div>
-                                <div className="flex items-center justify-between bg-white/5 p-1 rounded border border-white/5">
-                                  <span className="text-amber-300">🎯 Intended Lead</span>
-                                  <span className="text-white">@spurthi_ml_pro</span>
-                                </div>
-                                <div className="flex items-center justify-between bg-white/5 p-1 rounded border border-white/5">
-                                  <span className="text-emerald-300">📦 FAISS Database</span>
-                                  <span className="text-emerald-400">Match found & Saved!</span>
-                                </div>
-                              </div>
-
-                              {/* Statistics indicators at bottom */}
-                              <div className="flex justify-between items-center text-[7.5px] font-mono text-cyan-300">
-                                <div>Efficiency: <span className="text-white font-extrabold">98.4%</span></div>
-                                <div>Extracted Leads: <span className="text-white font-extrabold">11,204+</span></div>
-                              </div>
+                          /* Project 2: Social-to-Lead chatbot visuals Replicating Image 2 (Lead capture board & pipelines) */
+                          <div className="absolute inset-0 w-full h-full bg-gradient-to-tr from-[#f0f7ff] via-[#e0f2fe] to-[#f4faff] p-3 flex flex-col justify-between overflow-hidden">
+                            {/* Title banner */}
+                            <div className="flex items-center justify-between bg-white/80 backdrop-blur-xs px-2.5 py-1.5 rounded-xl border border-white shadow-xs z-10">
+                              <span className="text-[10px] font-black tracking-tight text-blue-900 font-sans">Convert Social Chats to Enterprise Leads</span>
+                              <span className="text-[8px] font-mono font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100 uppercase tracking-widest">RAG Engine</span>
                             </div>
+
+                            {/* Main Body - Split layout like Screenshot 2 */}
+                            <div className="grid grid-cols-12 gap-2 my-auto items-stretch relative z-10">
+                              
+                              {/* Left column: Social Channel inputs */}
+                              <div className="col-span-3 flex flex-col justify-center items-center gap-1 bg-white/40 p-1.5 rounded-xl border border-white/50 text-center">
+                                <span className="text-[7.5px] uppercase font-mono text-blue-500 font-extrabold tracking-wider leading-none mb-1">Socials</span>
+                                <div className="grid grid-cols-2 gap-1.5">
+                                  <span className="w-5 h-5 rounded-full bg-pink-100 flex items-center justify-center text-[10px] border border-pink-200">📸</span>
+                                  <span className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center text-[10px] border border-blue-200">📘</span>
+                                  <span className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center text-[10px] border border-emerald-200">💬</span>
+                                  <span className="w-5 h-5 rounded-full bg-sky-100 flex items-center justify-center text-[10px] border border-sky-200">🐦</span>
+                                </div>
+                                {/* Connector arrow */}
+                                <div className="text-[9px] text-blue-400 rotate-95 mt-1 animate-pulse">➡️</div>
+                              </div>
+
+                              {/* Center column: Active AI assistant chatbot working at desk */}
+                              <div className="col-span-4 flex flex-col items-center justify-center bg-white/60 p-2 rounded-2xl border border-white shadow-xs text-center relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-blue-100/10" />
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-400 to-blue-500 flex items-center justify-center text-xl shadow-md border-2 border-white animate-float z-10">🤖</div>
+                                <span className="text-[8px] font-mono font-extrabold text-[#1E293B] uppercase tracking-wider mt-1.5 z-10 leading-none">RAG BOT</span>
+                                <span className="text-[7px] text-blue-500 font-mono font-extrabold z-10 bg-blue-50 px-1 rounded-sm mt-0.5 border border-blue-100">Powered by FAISS</span>
+                              </div>
+
+                              {/* Right column: CRM lead capture card as requested */}
+                              <div className="col-span-5 bg-white p-2 rounded-2xl border border-blue-100 shadow-sm flex flex-col justify-between relative overflow-hidden">
+                                {/* Header badge */}
+                                <div className="flex items-center gap-1 border-b border-slate-50 pb-1 mb-1">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                  <span className="text-[7.5px] font-mono font-extrabold text-slate-500 uppercase tracking-wider">Lead Recorded</span>
+                                </div>
+                                
+                                {/* Fields */}
+                                <div className="space-y-0.5 text-[8.5px] text-slate-700 leading-none font-sans">
+                                  <p className="flex justify-between font-medium">
+                                    <span className="text-slate-400">Name:</span> <span className="font-extrabold text-slate-800">John Doe</span>
+                                  </p>
+                                  <p className="flex justify-between font-medium">
+                                    <span className="text-slate-400">Email:</span> <span className="text-blue-500 font-bold truncate max-w-[55%]">john.doe@email.com</span>
+                                  </p>
+                                  <p className="flex justify-between font-medium">
+                                    <span className="text-slate-400">Interest:</span> <span className="font-bold text-slate-800">Enterprise Pricing</span>
+                                  </p>
+                                </div>
+
+                                <div className="mt-1.5 py-0.5 text-center bg-emerald-500 text-white rounded-[6px] text-[7.5px] font-bold uppercase tracking-widest border border-emerald-600/10 shadow-3xs cursor-pointer">
+                                  Added to CRM ✓
+                                </div>
+                              </div>
+
+                            </div>
+
+                            {/* Bottom pipeline flow diagram ("How It Works") */}
+                            <div className="bg-[#0f172a] p-1.5 rounded-xl border border-slate-850 flex items-center justify-between text-[7px] font-mono text-slate-300">
+                              <span className="text-cyan-400 font-bold">1. Chat Ingestion</span>
+                              <span className="text-slate-500">➡️</span>
+                              <span className="text-amber-300 font-bold">2. NLP Entity Extract</span>
+                              <span className="text-slate-500">➡️</span>
+                              <span className="text-emerald-400 font-bold">3. Database Push</span>
+                            </div>
+
                           </div>
                         )}
-
                       </div>
 
                       {/* Project description list */}
@@ -697,501 +768,7 @@ export default function App() {
             </section>
 
             {/* SKILLS SECTION */}
-            <section id="skills" className="py-20 bg-[#FAF9FC] border-y border-gray-200/50 relative overflow-hidden z-10">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-                
-                {/* Elegant Segment Header mirroring the image layout exactly */}
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-12">
-                  <div className="space-y-1.5">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-xs font-bold uppercase tracking-wider mb-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-600 animate-pulse" />
-                      <span>MY EXPERTISE</span>
-                    </div>
-                    <h2 className="text-3.5xl sm:text-4xl font-display font-black text-gray-900 tracking-tight">
-                      Skills <span className="text-purple-600">& Technologies</span>
-                    </h2>
-                    <p className="text-gray-500 font-medium text-xs sm:text-sm max-w-xl leading-relaxed">
-                      A collection of tools, frameworks and technologies I work with to build intelligent and impactful data-driven solutions.
-                    </p>
-                  </div>
-
-                  {/* "Always Learning" side card block */}
-                  <div className="bg-white rounded-[20px] border border-gray-150 p-4.5 flex items-center gap-4.5 shadow-sm hover:shadow-md transition-all duration-300 max-w-sm w-full shrink-0 relative overflow-hidden group">
-                    <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-blue-500/5 rounded-full pointer-events-none group-hover:scale-125 transition-transform" />
-                    <div className="w-13 h-13 rounded-full bg-blue-50/70 border-2 border-blue-100/50 flex items-center justify-center text-blue-600 shrink-0 shadow-sm relative group-hover:bg-blue-100/20 transition-all duration-300">
-                      <svg className="w-6 h-6 text-blue-600 animate-pulse-subtle" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M9.663 17h4.673M12 3a7 7 0 00-7 7c0 2.22 1.03 4.193 2.628 5.486a4 4 0 011.372 3.014V19h6v-.5h-.005a4 4 0 011.378-3.014A7 7 0 0012 3z" />
-                      </svg>
-                    </div>
-                    <div className="leading-snug">
-                      <h4 className="font-display font-extrabold text-[#1E293B] text-sm tracking-tight flex items-center gap-1.5">
-                        Always Learning
-                        <span className="animate-bounce text-xs">🚀</span>
-                      </h4>
-                      <p className="text-[11px] text-gray-450 leading-relaxed font-semibold mt-0.5">
-                        I love exploring new technologies and building better solutions every day.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Interactive Category Filter Menu */}
-                <div className="flex flex-wrap gap-2 mb-10 pb-2 border-b border-gray-150/50">
-                  {['All', 'Languages', 'Machine Learning', 'Deep Learning', 'Generative AI', 'Data Analysis', 'Data Visualization', 'Databases', 'Tools & Platforms'].map((category) => (
-                    <button
-                      key={category}
-                      onClick={() => setSelectedSkillCategory(category)}
-                      className={`px-4 py-1.5 rounded-full text-[10.5px] font-extrabold tracking-wide transition-all uppercase cursor-pointer ${
-                        selectedSkillCategory === category
-                          ? 'bg-purple-600 text-white shadow-sm scale-102 font-extrabold'
-                          : 'bg-white hover:bg-gray-50 text-gray-500 hover:text-gray-900 border border-gray-250'
-                      }`}
-                    >
-                      {category}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Skills Bento Grid Dashboard - 4-columns layout matching exactly the image */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
-                  {/* 1. Python Card */}
-                  {(selectedSkillCategory === 'All' || selectedSkillCategory === 'Languages') && (
-                    <div className="bg-white rounded-3xl border border-gray-150/90 p-5.5 shadow-2xs hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group flex flex-col justify-between relative overflow-hidden min-h-[250px]">
-                      <div className="relative z-10 flex flex-col h-full justify-between">
-                        {/* Header */}
-                        <div className="flex items-center gap-2 pb-2 mb-3 border-b border-purple-50">
-                          <div className="p-1 px-2 rounded-lg bg-purple-50 text-purple-600 font-bold text-[10px] tracking-wide flex items-center gap-1">
-                            <span className="text-[11px]">{"</>"}</span>
-                            <span>Languages</span>
-                          </div>
-                        </div>
-
-                        {/* Centered Logo element */}
-                        <div className="h-20 flex items-center justify-center my-2 select-none">
-                          <svg className="w-13 h-13 animate-float" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2C6.48 2 6.13 2.5 6.13 4.5v2.2h5.87v.6H3.64C1.64 7.3 1 8.2 1 12.1c0 3.9.78 4.8 2.78 4.8H6.1v-2.2c0-3.3 2.2-4.6 5.4-4.6H17.37V4.5C17.37 2.5 16.52 2 12 2z" fill="#306998" />
-                            <path d="M12 22c5.52 0 5.87-.5 5.87-2.5v-2.2H12v-.6h8.36c2 0 2.64-.9 2.64-4.8 0-3.9-.78-4.8-2.78-4.8H17.9v2.2c0 3.3-2.2 4.6-5.4 4.6H6.63v5.6c0 2 1.15 2.5 5.37 2.5z" fill="#FFE873" />
-                            <circle cx="9" cy="5.5" r="0.75" fill="#fff" />
-                            <circle cx="15" cy="18.5" r="0.75" fill="#a5f3fc" />
-                          </svg>
-                        </div>
-
-                        {/* Bottom stats & details */}
-                        <div className="mt-auto space-y-2 relative pt-2">
-                          <div className="text-center">
-                            <div className="text-2xl font-black text-purple-650 tracking-tight">95%</div>
-                            <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Python</div>
-                          </div>
-                          
-                          {/* Continuous animating progress bar */}
-                          <div className="h-1.5 rounded-full bg-purple-50 overflow-hidden relative shadow-inner">
-                            <div className="h-full rounded-full bg-gradient-to-r from-purple-500 via-indigo-500 to-purple-500 animate-fluid-flow" style={{ width: '95%' }} />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Wave overlay background */}
-                      <svg className="absolute bottom-0 left-0 w-full pointer-events-none z-0 opacity-70" viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0,160 C320,240 640,120 960,200 C1280,280 1440,180 1440,180 L1440,320 L0,320 Z" fill="#c084fc" fillOpacity="0.14" />
-                        <path d="M0,230 C360,280 720,220 1080,260 C1440,300 1440,320 1440,320 L0,320 Z" fill="#818cf8" fillOpacity="0.08" />
-                      </svg>
-                    </div>
-                  )}
-
-                  {/* 2. Scikit-learn Card */}
-                  {(selectedSkillCategory === 'All' || selectedSkillCategory === 'Machine Learning') && (
-                    <div className="bg-white rounded-3xl border border-gray-150/90 p-5.5 shadow-2xs hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group flex flex-col justify-between relative overflow-hidden min-h-[250px]">
-                      <div className="relative z-10 flex flex-col h-full justify-between">
-                        {/* Header */}
-                        <div className="flex items-center gap-2 pb-2 mb-3 border-b border-pink-50">
-                          <div className="p-1 px-2 rounded-lg bg-pink-50 text-pink-600 font-bold text-[10px] tracking-wide flex items-center gap-1">
-                            <span>🧠</span>
-                            <span>Machine Learning</span>
-                          </div>
-                        </div>
-
-                        {/* Centered Logo element */}
-                        <div className="h-20 flex items-center justify-center my-2 select-none">
-                          <svg className="h-12 w-32 animate-float-delayed" viewBox="0 0 100 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="22" cy="18" r="8" fill="#3499CD" />
-                            <circle cx="36" cy="22" r="10" fill="#F89938" />
-                            <path d="M22 18Q29 10 36 22" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" />
-                            <text x="50" y="22" fill="#1e293b" fontSize="9.5" fontWeight="900" fontFamily="sans-serif">scikit</text>
-                            <text x="50" y="32" fill="#ec4899" fontSize="7.5" fontWeight="extrabold" fontFamily="monospace">learn</text>
-                          </svg>
-                        </div>
-
-                        {/* Bottom stats & details */}
-                        <div className="mt-auto space-y-2 relative pt-2">
-                          <div className="text-center">
-                            <div className="text-2xl font-black text-pink-600 tracking-tight">90%</div>
-                            <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Scikit-learn</div>
-                          </div>
-                          
-                          {/* Continuous animating progress bar */}
-                          <div className="h-1.5 rounded-full bg-pink-50 overflow-hidden relative shadow-inner">
-                            <div className="h-full rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-pink-500 animate-fluid-flow" style={{ width: '90%' }} />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Wave overlay background */}
-                      <svg className="absolute bottom-0 left-0 w-full pointer-events-none z-0 opacity-70" viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0,180 C320,120 640,240 960,160 C1280,80 1440,200 1440,200 L1440,320 L0,320 Z" fill="#f472b6" fillOpacity="0.12" />
-                        <path d="M0,220 C360,260 720,200 1080,240 C1440,280 1440,320 1440,320 L0,320 Z" fill="#fda4af" fillOpacity="0.08" />
-                      </svg>
-                    </div>
-                  )}
-
-                  {/* 3. TensorFlow Card */}
-                  {(selectedSkillCategory === 'All' || selectedSkillCategory === 'Deep Learning') && (
-                    <div className="bg-white rounded-3xl border border-gray-150/90 p-5.5 shadow-2xs hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group flex flex-col justify-between relative overflow-hidden min-h-[250px]">
-                      <div className="relative z-10 flex flex-col h-full justify-between">
-                        {/* Header */}
-                        <div className="flex items-center gap-2 pb-2 mb-3 border-b border-amber-50">
-                          <div className="p-1 px-2 rounded-lg bg-amber-50 text-amber-600 font-bold text-[10px] tracking-wide flex items-center gap-1">
-                            <span>⚛️</span>
-                            <span>Deep Learning</span>
-                          </div>
-                        </div>
-
-                        {/* Centered Logo element */}
-                        <div className="h-20 flex items-center justify-center my-2 select-none">
-                          <svg className="w-13 h-13 animate-float" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L4 6.5v11L12 22l8-4.5v-11L12 2z" fill="#FF6F00" opacity="0.1" />
-                            <path d="M12 3.5L5 7.5v9l7 4 7-4v-9L12 3.5z" fill="#FF6F00" />
-                            <path d="M12 3.5v17l7-4v-9l-7-4z" fill="#FFA000" />
-                            <path d="M8 8.5h8v2H8v-2zM11 10.5h2v7h-2v-7z" fill="#FFFFFF" />
-                          </svg>
-                        </div>
-
-                        {/* Bottom stats & details */}
-                        <div className="mt-auto space-y-2 relative pt-2">
-                          <div className="text-center">
-                            <div className="text-2xl font-black text-amber-600 tracking-tight">85%</div>
-                            <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">TensorFlow</div>
-                          </div>
-                          
-                          {/* Continuous animating progress bar */}
-                          <div className="h-1.5 rounded-full bg-amber-50 overflow-hidden relative shadow-inner">
-                            <div className="h-full rounded-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 animate-fluid-flow" style={{ width: '85%' }} />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Wave overlay background */}
-                      <svg className="absolute bottom-0 left-0 w-full pointer-events-none z-0 opacity-70" viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0,150 C320,200 640,150 960,220 C1280,290 1440,160 1440,160 L1440,320 L0,320 Z" fill="#fb923c" fillOpacity="0.14" />
-                        <path d="M0,230 C360,250 720,200 1080,240 C1440,280 1440,320 1440,320 L0,320 Z" fill="#fde047" fillOpacity="0.08" />
-                      </svg>
-                    </div>
-                  )}
-
-                  {/* 4. OpenAI Card */}
-                  {(selectedSkillCategory === 'All' || selectedSkillCategory === 'Generative AI') && (
-                    <div className="bg-white rounded-3xl border border-gray-150/90 p-5.5 shadow-2xs hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group flex flex-col justify-between relative overflow-hidden min-h-[250px]">
-                      <div className="relative z-10 flex flex-col h-full justify-between">
-                        {/* Header */}
-                        <div className="flex items-center gap-2 pb-2 mb-3 border-b border-emerald-50">
-                          <div className="p-1 px-2 rounded-lg bg-emerald-50 text-emerald-600 font-bold text-[10px] tracking-wide flex items-center gap-1">
-                            <span>✨</span>
-                            <span>Generative AI</span>
-                          </div>
-                        </div>
-
-                        {/* Centered Logo element */}
-                        <div className="h-20 flex items-center justify-center my-2 select-none">
-                          <svg className="w-13 h-13 text-[#10a37f] animate-float-delayed" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M4.5 16.5c-1.5-1.25-2.5-3.25-2.5-5.5a6.5 6.5 0 0 1 12.05-3.32" />
-                            <path d="M12 11h.01M16.5 4.5c1.25 1.5 3.25 2.5 5.5 2.5A6.5 6.5 0 0 1 18.68 19" />
-                            <path d="M11 12h.01M19.5 7.5C18.25 9 16.25 10 14 10a6.5 6.5 0 0 1-5.32-12.05" />
-                            <path d="M12 13h.01M7.5 19.5c-1.25-1.5-3.25-2.5-5.5-2.5a6.5 6.5 0 0 1 3.32-12.05" />
-                            <path d="M13 12h.01M4.5 7.5C5.75 6 7.75 5 10 5a6.5 6.5 0 0 1 5.32 12.05" />
-                            <path d="M19.5 16.5c1.25-1.5 2.25-3.5 2.25-5.5a6.5 6.5 0 0 1-12.05 3.32" />
-                          </svg>
-                        </div>
-
-                        {/* Bottom stats & details */}
-                        <div className="mt-auto space-y-2 relative pt-2">
-                          <div className="text-center">
-                            <div className="text-2xl font-black text-emerald-600 tracking-tight">90%</div>
-                            <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">LLMs / GenAI</div>
-                          </div>
-                          
-                          {/* Continuous animating progress bar */}
-                          <div className="h-1.5 rounded-full bg-emerald-50 overflow-hidden relative shadow-inner">
-                            <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 animate-fluid-flow" style={{ width: '90%' }} />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Wave overlay background */}
-                      <svg className="absolute bottom-0 left-0 w-full pointer-events-none z-0 opacity-70" viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0,160 C320,120 640,240 960,180 C1280,120 1440,220 1440,220 L1440,320 L0,320 Z" fill="#34d399" fillOpacity="0.14" />
-                        <path d="M0,230 C360,260 720,210 1080,245 C1440,280 1440,320 1440,320 L0,320 Z" fill="#2dd4bf" fillOpacity="0.08" />
-                      </svg>
-                    </div>
-                  )}
-
-                  {/* 5. Pandas Card */}
-                  {(selectedSkillCategory === 'All' || selectedSkillCategory === 'Data Analysis') && (
-                    <div className="bg-white rounded-3xl border border-gray-150/90 p-5.5 shadow-2xs hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group flex flex-col justify-between relative overflow-hidden min-h-[250px]">
-                      <div className="relative z-10 flex flex-col h-full justify-between">
-                        {/* Header */}
-                        <div className="flex items-center gap-2 pb-2 mb-3 border-b border-orange-50">
-                          <div className="p-1 px-2 rounded-lg bg-orange-50 text-orange-600 font-bold text-[10px] tracking-wide flex items-center gap-1">
-                            <span>📊</span>
-                            <span>Data Analysis</span>
-                          </div>
-                        </div>
-
-                        {/* Centered Logo element */}
-                        <div className="h-20 flex items-center justify-center my-2 select-none">
-                          <svg className="w-13 h-13 animate-float" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="4" y="9" width="3.5" height="11" rx="1" fill="#130654" />
-                            <rect x="10.5" y="4" width="3.5" height="16" rx="1" fill="#E70488" />
-                            <rect x="17" y="7" width="3.5" height="13" rx="1" fill="#3B82F6" />
-                            <path d="M4 20h16.5" stroke="#130654" strokeWidth="1.5" strokeLinecap="round" />
-                          </svg>
-                        </div>
-
-                        {/* Bottom stats & details */}
-                        <div className="mt-auto space-y-2 relative pt-2">
-                          <div className="text-center">
-                            <div className="text-2xl font-black text-orange-550 tracking-tight">90%</div>
-                            <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Pandas</div>
-                          </div>
-                          
-                          {/* Continuous animating progress bar */}
-                          <div className="h-1.5 rounded-full bg-orange-55 overflow-hidden relative shadow-inner">
-                            <div className="h-full rounded-full bg-gradient-to-r from-orange-400 via-amber-350 to-orange-400 animate-fluid-flow" style={{ width: '90%' }} />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Wave overlay background */}
-                      <svg className="absolute bottom-0 left-0 w-full pointer-events-none z-0 opacity-70" viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0,170 C320,220 640,130 960,195 C1280,260 1440,150 1440,150 L1440,320 L0,320 Z" fill="#fb923c" fillOpacity="0.12" />
-                        <path d="M0,240 C360,270 720,230 1080,255 C1440,280 1440,320 1440,320 L0,320 Z" fill="#fdba74" fillOpacity="0.08" />
-                      </svg>
-                    </div>
-                  )}
-
-                  {/* 6. Matplotlib Card */}
-                  {(selectedSkillCategory === 'All' || selectedSkillCategory === 'Data Visualization') && (
-                    <div className="bg-white rounded-3xl border border-gray-150/90 p-5.5 shadow-2xs hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group flex flex-col justify-between relative overflow-hidden min-h-[250px]">
-                      <div className="relative z-10 flex flex-col h-full justify-between">
-                        {/* Header */}
-                        <div className="flex items-center gap-2 pb-2 mb-3 border-b border-indigo-50">
-                          <div className="p-1 px-2 rounded-lg bg-indigo-50 text-indigo-600 font-bold text-[10px] tracking-wide flex items-center gap-1">
-                            <span>📈</span>
-                            <span>Data Visualization</span>
-                          </div>
-                        </div>
-
-                        {/* Centered Logo element */}
-                        <div className="h-20 flex items-center justify-center my-2 select-none">
-                          <svg className="w-13 h-13 animate-float-delayed" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12" cy="12" r="10" stroke="#cbd5e1" strokeWidth="1" strokeDasharray="2 2" />
-                            <line x1="12" y1="2" x2="12" y2="22" stroke="#94a3b8" strokeWidth="0.5" />
-                            <line x1="2" y1="12" x2="22" y2="12" stroke="#94a3b8" strokeWidth="0.5" />
-                            <path d="M12 12 L12 6 A6 6 0 0 1 17 9 Z" fill="#F59E0B" fillOpacity="0.8" />
-                            <path d="M12 12 L17 9 A7 7 0 0 1 18 15 Z" fill="#EF4444" fillOpacity="0.8" />
-                            <path d="M12 12 L18 15 A8 8 0 0 1 11 20 Z" fill="#3B82F6" fillOpacity="0.8" />
-                            <path d="M12 12 L11 20 A9 9 0 0 1 5 13 Z" fill="#10B981" fillOpacity="0.8" />
-                          </svg>
-                        </div>
-
-                        {/* Bottom stats & details */}
-                        <div className="mt-auto space-y-2 relative pt-2">
-                          <div className="text-center">
-                            <div className="text-2xl font-black text-purple-600 tracking-tight">85%</div>
-                            <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Matplotlib</div>
-                          </div>
-                          
-                          {/* Continuous animating progress bar */}
-                          <div className="h-1.5 rounded-full bg-purple-50 overflow-hidden relative shadow-inner">
-                            <div className="h-full rounded-full bg-gradient-to-r from-purple-400 via-pink-300 to-purple-400 animate-fluid-flow" style={{ width: '85%' }} />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Wave overlay background */}
-                      <svg className="absolute bottom-0 left-0 w-full pointer-events-none z-0 opacity-70" viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0,140 C320,200 640,160 960,225 C1280,290 1440,190 1440,190 L1440,320 L0,320 Z" fill="#d8b4fe" fillOpacity="0.14" />
-                        <path d="M0,220 C360,240 720,210 1080,245 C1440,280 1440,320 1440,320 L0,320 Z" fill="#f5d0fe" fillOpacity="0.08" />
-                      </svg>
-                    </div>
-                  )}
-
-                  {/* 7. MySQL Card */}
-                  {(selectedSkillCategory === 'All' || selectedSkillCategory === 'Databases') && (
-                    <div className="bg-white rounded-3xl border border-gray-150/90 p-5.5 shadow-2xs hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group flex flex-col justify-between relative overflow-hidden min-h-[250px]">
-                      <div className="relative z-10 flex flex-col h-full justify-between">
-                        {/* Header */}
-                        <div className="flex items-center gap-2 pb-2 mb-3 border-b border-blue-50">
-                          <div className="p-1 px-2 rounded-lg bg-blue-50 text-blue-600 font-bold text-[10px] tracking-wide flex items-center gap-1">
-                            <span>🗄️</span>
-                            <span>Databases</span>
-                          </div>
-                        </div>
-
-                        {/* Centered Logo element */}
-                        <div className="h-20 flex items-center justify-center my-2 select-none">
-                          <svg className="w-14 h-13 animate-float" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M18.5 4.5c-.8-.8-2-1.2-3.3-1.1-1.3.1-2.4.8-3 1.8-.4.7-.6 1.5-.5 2.3.1.8.4 1.5.9 2H8.8C7 9.5 5.5 11 5.5 12.8v2.7c0 1.2.7 2.3 1.8 2.8 1.1.5 2.4.3 3.3-.5l4.5-4.5c.8-.8 1.2-2 1.1-3.3s-.8-2.4-1.8-3c-.7-.4-1.5-.6-2.3-.5.7-1 2-1.5 3.3-1.3 1.3.2 2.3 1 2.8 2.2" stroke="#00758F" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M16.5 10c.5 0 1-.5 1-1s-.5-1-1-1-1 .5-1 1 .5 1 1 1z" fill="#F29111" />
-                            <path d="M3 21c3-1 5 1 8-1s5 1 8-1" stroke="#00758F" strokeWidth="1" strokeLinecap="round" />
-                          </svg>
-                        </div>
-
-                        {/* Bottom stats & details */}
-                        <div className="mt-auto space-y-2 relative pt-2">
-                          <div className="text-center">
-                            <div className="text-2xl font-black text-blue-600 tracking-tight">85%</div>
-                            <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">MySQL</div>
-                          </div>
-                          
-                          {/* Continuous animating progress bar */}
-                          <div className="h-1.5 rounded-full bg-blue-50 overflow-hidden relative shadow-inner">
-                            <div className="h-full rounded-full bg-gradient-to-r from-blue-500 via-sky-400 to-blue-500 animate-fluid-flow" style={{ width: '85%' }} />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Wave overlay background */}
-                      <svg className="absolute bottom-0 left-0 w-full pointer-events-none z-0 opacity-70" viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0,160 C320,240 640,120 960,200 C1280,280 1440,180 1440,180 L1440,320 L0,320 Z" fill="#60a5fa" fillOpacity="0.14" />
-                        <path d="M0,230 C360,280 720,220 1080,260 C1440,300 1440,320 1440,320 L0,320 Z" fill="#7dd3fc" fillOpacity="0.08" />
-                      </svg>
-                    </div>
-                  )}
-
-                  {/* 8. Jupyter Notebook Card */}
-                  {(selectedSkillCategory === 'All' || selectedSkillCategory === 'Tools & Platforms') && (
-                    <div className="bg-white rounded-3xl border border-gray-150/90 p-5.5 shadow-2xs hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group flex flex-col justify-between relative overflow-hidden min-h-[250px]">
-                      <div className="relative z-10 flex flex-col h-full justify-between">
-                        {/* Header */}
-                        <div className="flex items-center gap-2 pb-2 mb-3 border-b border-rose-50">
-                          <div className="p-1 px-2 rounded-lg bg-rose-50 text-rose-600 font-bold text-[10px] tracking-wide flex items-center gap-1">
-                            <span>⚙️</span>
-                            <span>Tools & Platforms</span>
-                          </div>
-                        </div>
-
-                        {/* Centered Logo element */}
-                        <div className="h-20 flex items-center justify-center my-2 select-none">
-                          <svg className="w-13 h-13 animate-float-delayed" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#71717a" strokeWidth="0.75" strokeDasharray="3 3"/>
-                            <circle cx="12" cy="12" r="2.5" fill="#F37626" />
-                            <path d="M12 4.5 A7.5 7.5 0 0 0 6 12 A7.5 7.5 0 0 0 12 19.5" stroke="#F37626" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-                            <path d="M12 4.5 A7.5 7.5 0 0 1 18 12 A7.5 7.5 0 0 1 12 19.5" stroke="#F37626" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-                            <circle cx="12" cy="4.5" r="1.5" fill="#71717a" />
-                            <circle cx="12" cy="19.5" r="1.5" fill="#71717a" />
-                          </svg>
-                        </div>
-
-                        {/* Bottom stats & details */}
-                        <div className="mt-auto space-y-2 relative pt-2">
-                          <div className="text-center">
-                            <div className="text-2xl font-black text-rose-600 tracking-tight">90%</div>
-                            <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Jupyter Notebook</div>
-                          </div>
-                          
-                          {/* Continuous animating progress bar */}
-                          <div className="h-1.5 rounded-full bg-rose-50 overflow-hidden relative shadow-inner">
-                            <div className="h-full rounded-full bg-gradient-to-r from-red-500 via-orange-400 to-rose-500 animate-fluid-flow" style={{ width: '90%' }} />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Wave overlay background */}
-                      <svg className="absolute bottom-0 left-0 w-full pointer-events-none z-0 opacity-70" viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0,180 C320,120 640,240 960,160 C1280,80 1440,200 1440,200 L1440,320 L0,320 Z" fill="#f43f5e" fillOpacity="0.12" />
-                        <path d="M0,220 C360,260 720,200 1080,240 C1440,280 1440,320 1440,320 L0,320 Z" fill="#fda4af" fillOpacity="0.08" />
-                      </svg>
-                    </div>
-                  )}
-
-                </div>
-
-                {/* Highly Polished Bottom Statistics Banner from the image */}
-                <div className="mt-14 p-5 sm:p-6 bg-white/70 backdrop-blur-md rounded-2xl border border-gray-150/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/2 via-transparent to-pink-500/2 opacity-70 pointer-events-none" />
-                  
-                  {/* Stat 1 */}
-                  <div className="flex-1 flex items-center gap-3.5 md:justify-center px-4 md:border-r border-gray-150/70">
-                    <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100/60 flex items-center justify-center text-blue-650 shrink-0">
-                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
-                      </svg>
-                    </div>
-                    <div className="leading-snug">
-                      <div className="text-xl font-black text-gray-900 font-sans tracking-tight">6+</div>
-                      <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Technologies Mastered</div>
-                    </div>
-                  </div>
-
-                  {/* Stat 2 */}
-                  <div className="flex-1 flex items-center gap-3.5 md:justify-center px-4 md:border-r border-gray-150/70">
-                    <div className="w-10 h-10 rounded-full bg-indigo-50 border border-indigo-100/60 flex items-center justify-center text-indigo-655 shrink-0">
-                      <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                      </svg>
-                    </div>
-                    <div className="leading-snug">
-                      <div className="text-xl font-black text-gray-900 font-sans tracking-tight">2+</div>
-                      <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">AI/ML Projects Built</div>
-                    </div>
-                  </div>
-
-                  {/* Stat 3 */}
-                  <div className="flex-1 flex items-center gap-3.5 md:justify-center px-4 md:border-r border-gray-150/70">
-                    <div className="w-10 h-10 rounded-full bg-pink-50 border border-pink-100/60 flex items-center justify-center text-pink-500 shrink-0">
-                      <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58l.004-.004a.2.2 0 00-.003-.312L13 12.12M12 10.5a3 3 0 11-6 0 3 3 0 016 0z" strokeWidth="1.8" />
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.3 14.89l2.77 2.77a1 1 0 001.42 0l2.25-2.25a1 1 0 000-1.42l-2.77-2.77" />
-                      </svg>
-                    </div>
-                    <div className="leading-snug">
-                      <div className="text-xl font-black text-gray-900 font-sans tracking-tight">11K+</div>
-                      <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Records Processed</div>
-                    </div>
-                  </div>
-
-                  {/* Stat 4 */}
-                  <div className="flex-1 flex items-center gap-3.5 md:justify-center px-4 md:border-r border-gray-150/70">
-                    <div className="w-10 h-10 rounded-full bg-amber-50 border border-amber-100/60 flex items-center justify-center text-amber-550 shrink-0">
-                      <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-5.25c-.621 0-1.125.504-1.125 1.125v3.375m9 0V9M5.25 18.75V9m4.25-6.75h5a.75.75 0 01.75.75v1.5a.75.75 0 01-.75.75h-5a.75.75 0 01-.75-.75V3a.75.75 0 01.75-.75z" />
-                      </svg>
-                    </div>
-                    <div className="leading-snug">
-                      <div className="text-xl font-black text-gray-900 font-sans tracking-tight">1+</div>
-                      <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Years Learning</div>
-                    </div>
-                  </div>
-
-                  {/* Stat 5 */}
-                  <div className="flex-1 flex items-center gap-3.5 md:justify-center px-4">
-                    <div className="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-100/60 flex items-center justify-center text-emerald-600 shrink-0">
-                      <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" strokeLinecap="round" strokeLinejoin="round" />
-                        <circle cx="12" cy="12" r="6" strokeLinecap="round" strokeLinejoin="round" />
-                        <circle cx="12" cy="12" r="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                    <div className="leading-snug">
-                      <div className="text-xl font-black text-gray-900 font-sans tracking-tight">100%</div>
-                      <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Passion & Dedication</div>
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-            </section>
+            <Skills isDarkMode={isDarkMode} />
 
             {/* EXPERIENCE SECTION - Hybrid modern card timeline */}
             <section id="experience" className="py-20 bg-white relative z-10 border-b border-gray-200/50">
@@ -1398,7 +975,7 @@ export default function App() {
                       </span>
                       
                       <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-gray-900 tracking-tight leading-tight">
-                        Let's collaborate on real problems
+                        Reach Out
                       </h2>
                       
                       <p className="text-xs sm:text-sm text-gray-550 leading-relaxed font-semibold">
@@ -1575,17 +1152,29 @@ export default function App() {
             </button>
 
             {/* Custom high contrast illustrative project hero banner */}
-            <div className={`p-8 sm:p-12 rounded-[28px] text-white relative overflow-hidden mb-10 shadow-lg bg-gradient-to-tr ${
-              selectedProject.id === 'counselor' 
-                ? 'from-indigo-600 via-purple-600 to-pink-500' 
-                : 'from-blue-600 via-teal-600 to-cyan-500'
-            }`}>
+            <div className="p-8 sm:p-12 rounded-[28px] text-white relative overflow-hidden mb-10 shadow-lg min-h-[300px] flex items-center bg-slate-900">
+              {/* Actual realistic, related background image */}
+              <img 
+                src={selectedProject.id === 'counselor' 
+                  ? "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=80"
+                  : "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80"
+                } 
+                alt={selectedProject.title}
+                className="absolute inset-0 w-full h-full object-cover brightness-[0.35] transition-transform duration-700" 
+                referrerPolicy="no-referrer"
+              />
+              {/* Dynamic glassmorphism gradient overlay */}
+              <div className={`absolute inset-0 bg-gradient-to-r opacity-90 ${
+                selectedProject.id === 'counselor' 
+                  ? 'from-indigo-950/90 via-purple-900/60 to-transparent' 
+                  : 'from-blue-950/90 via-teal-900/60 to-transparent'
+              }`} />
               
               {/* Decorative rings */}
               <div className="absolute right-[-40px] bottom-[-40px] w-56 h-56 rounded-full border-4 border-white/10 pointer-events-none" />
               <div className="absolute right-[40px] top-[-40px] w-44 h-44 rounded-full border-2 border-white/5 pointer-events-none" />
 
-              <div className="relative z-10 space-y-4">
+              <div className="relative z-10 space-y-4 w-full">
                 <span className="px-3 py-1 rounded-full bg-white/20 border border-white/30 text-[10px] font-mono font-bold tracking-wider uppercase">
                   Technical Case Analysis
                 </span>
@@ -1779,8 +1368,9 @@ export default function App() {
       </div>
 
       {/* FOOTER BLOCK */}
-      <footer className="py-12 bg-white border-t border-gray-150 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+      <footer className="py-16 bg-white border-t border-gray-150 relative z-10">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
+          
           <div className="flex justify-center items-center gap-2 select-none">
             <span className="text-3xl font-cursive tracking-normal bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
               Spurthi
@@ -1790,9 +1380,21 @@ export default function App() {
             </span>
           </div>
 
-          <p className="text-xs text-gray-400 font-medium font-mono leading-none">
-            © 2026 Spurthi Mulkanuri. Structured & optimized for direct recruiter review.
+          <p className="text-xs sm:text-sm text-gray-500 leading-relaxed font-semibold max-w-2xl mx-auto">
+            "Thank you for exploring my portfolio. I'm always excited to collaborate on innovative AI, Machine Learning, and Data Science projects. Let's create something impactful together."
           </p>
+
+          <div className="w-12 h-[1px] bg-slate-200 mx-auto" />
+
+          <div className="space-y-2">
+            <p className="text-xs text-gray-400 font-bold font-mono tracking-tight leading-none">
+              © 2026 Spurthi Mulkanuri. All Rights Reserved.
+            </p>
+            <p className="text-[10px] text-gray-400 font-semibold font-mono tracking-tight">
+              Designed & Developed with ❤️ using React, Tailwind CSS & Framer Motion.
+            </p>
+          </div>
+          
         </div>
       </footer>
 
