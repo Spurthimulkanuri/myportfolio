@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&family=Pacifico&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", "Inter", sans-serif;
+  --font-display: "Syne", "Outfit", sans-serif;
+  --font-cursive: "Pacifico", cursive;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-brand-primary: #8b5cf6; /* Vibrant violet */
+  --color-brand-secondary: #06b6d4; /* Teal */
+  --color-brand-dark: #0f172a; /* Deep navy */
+}
+
+/* Custom CSS Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+@keyframes float-delayed {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(8px) rotate(-1deg);
+  }
+}
+
+@keyframes spin-orbit-clockwise {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-orbit-counter {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
+/* Helper Custom Classes linking to Keyframes */
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 6s ease-in-out infinite;
+}
+
+.animate-orbit-cw {
+  animation: spin-orbit-clockwise 25s linear infinite;
+}
+
+.animate-orbit-ccw {
+  animation: spin-orbit-counter 18s linear infinite;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 4s ease-in-out infinite;
+}
+
+/* Fluid flowing stripes/glow for progress bar */
+@keyframes fluid-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.animate-fluid-flow {
+  background-size: 200% 100%;
+  animation: fluid-flow 2.5s linear infinite;
+}
+
+/* 3D text styling for brand mark logos */
+.logo-3d {
+  font-family: 'Pacifico', cursive;
+  font-size: 2.25rem;
+  font-weight: bold;
+  background: linear-gradient(135deg, #ec4899 0%, #a855f7 50%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(2px 2px 2px rgba(168, 85, 247, 0.25)) drop-shadow(-1px -1px 0px rgba(255, 255, 255, 0.8));
+  text-shadow: 2px 2px 0px rgba(236, 72, 153, 0.1), 4px 4px 0px rgba(168, 85, 247, 0.05);
+}
+
+/* Beautiful custom glassy card styling */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(241, 245, 249, 0.8);
+}
+
+/* Technical Python editor block gradient */
+.terminal-gradient {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+}
