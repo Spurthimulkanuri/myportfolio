@@ -47,6 +47,74 @@ export default function App() {
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   const [fadeRole, setFadeRole] = useState(true);
 
+  // Gemini Sparkle interactive particles state
+  const [sparkles, setSparkles] = useState<{
+    id: string;
+    x: number;
+    y: number;
+    size: number;
+    color: string;
+    angle: number;
+    distance: number;
+    delay: number;
+    created: number;
+  }[]>([]);
+
+  // Add click listener to window to generate sparks on any interactive touch or click
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      // Spawn elegant Gemini-inspired sparks (8 in a clean explosion circle)
+      const count = 8;
+      const newSparkles = [];
+      const colors = [
+        '#EC4899', // Pink
+        '#8B5CF6', // Purple/Violet
+        '#3B82F6', // Blue
+        '#06B6D4', // Cyan
+        '#F59E0B', // Gold/Amber
+        '#F43F5E'  // Rose
+      ];
+      
+      const clickId = Math.random().toString(36).substring(2, 9);
+      const now = Date.now();
+      
+      for (let i = 0; i < count; i++) {
+        const angle = (i * (360 / count)) + (Math.random() * 30 - 15);
+        const distance = 30 + Math.random() * 50;
+        const size = 10 + Math.random() * 15;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const delay = Math.random() * 0.08;
+
+        newSparkles.push({
+          id: `${clickId}-${i}`,
+          x: e.clientX,
+          y: e.clientY,
+          size,
+          color,
+          angle,
+          distance,
+          delay,
+          created: now
+        });
+      }
+
+      setSparkles(prev => [...prev.slice(-32), ...newSparkles]);
+    };
+
+    window.addEventListener('click', handleGlobalClick);
+    return () => window.removeEventListener('click', handleGlobalClick);
+  }, []);
+
+  // Filter out outdated sparkles to ensure outstanding performance
+  useEffect(() => {
+    if (sparkles.length === 0) return;
+    const interval = setInterval(() => {
+      const now = Date.now();
+      setSparkles(prev => prev.filter(s => now - s.created < 1100));
+    }, 250);
+    return () => clearInterval(interval);
+  }, [sparkles.length]);
+
   // Adaptable Theme State
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -281,14 +349,83 @@ export default function App() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="min-h-screen bg-[#FAF9FC] dark:bg-[#07060F] text-[#1E293B] dark:text-[#E2E8F0] font-sans selection:bg-purple-100 dark:selection:bg-purple-900 selection:text-purple-950 dark:selection:text-purple-100 overflow-x-hidden transition-colors duration-300"
+          className="min-h-screen relative bg-[#FAF9FC] dark:bg-[#07060F] text-[#1E293B] dark:text-[#E2E8F0] font-sans selection:bg-purple-100 dark:selection:bg-purple-900 selection:text-purple-950 dark:selection:text-purple-100 overflow-x-hidden transition-colors duration-300"
         >
-      {/* Dynamic decorative visual glow rings for high premium texture */}
-      <div className="absolute top-0 left-0 w-full h-[650px] overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-5%] right-[-5%] w-[550px] h-[550px] rounded-full bg-purple-200/40 dark:bg-purple-950/10 blur-[130px] transition-colors duration-300" />
-        <div className="absolute top-[25%] left-[-10%] w-[450px] h-[450px] rounded-full bg-blue-200/30 dark:bg-blue-950/10 blur-[110px] transition-colors duration-300" />
-        <div className="absolute top-[45%] right-[15%] w-[350px] h-[350px] rounded-full bg-pink-100/20 dark:bg-pink-950/10 blur-[100px] transition-colors duration-300" />
+      {/* Ambient gradient backgrounds & gentle shimmering sparks across the entire website page height */}
+      <div className="absolute inset-x-0 top-0 bottom-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-5%] right-[-5%] w-[550px] h-[550px] rounded-full bg-purple-200/30 dark:bg-purple-950/10 blur-[135px] transition-all duration-1000 animate-pulse-slow" />
+        <div className="absolute top-[25%] left-[-10%] w-[450px] h-[450px] rounded-full bg-blue-200/25 dark:bg-blue-950/10 blur-[115px] transition-all duration-1000 animate-pulse-delayed" />
+        <div className="absolute top-[45%] right-[10%] w-[400px] h-[400px] rounded-full bg-pink-100/20 dark:bg-pink-950/10 blur-[105px] transition-all duration-1000 animate-pulse-slow" />
+        <div className="absolute top-[70%] left-[5%] w-[500px] h-[500px] rounded-full bg-indigo-150/15 dark:bg-indigo-950/10 blur-[130px] transition-all duration-1000 animate-pulse-delayed" />
+        <div className="absolute top-[85%] right-[5%] w-[480px] h-[480px] rounded-full bg-teal-100/15 dark:bg-teal-950/5 blur-[125px] transition-all duration-1000 animate-pulse-slow" />
+
+        {/* Gently shifting passive particle stars shimmer */}
+        <div className="absolute inset-0 opacity-45 dark:opacity-65">
+          <div className="absolute top-[6%] left-[15%] w-1.5 h-1.5 rounded-full bg-purple-400 dark:bg-purple-300 blur-[0.5px] animate-particle-float" />
+          <div className="absolute top-[18%] right-[20%] w-1 h-1 rounded-full bg-pink-400 dark:bg-pink-300 blur-[0.5px] animate-particle-float-slow" />
+          <div className="absolute top-[28%] left-[8%] w-2 h-2 rounded-full bg-blue-400 dark:bg-blue-400 blur-[1px] opacity-75 animate-particle-float" />
+          <div className="absolute top-[38%] right-[10%] w-1.5 h-1.5 rounded-full bg-yellow-300 dark:bg-amber-300 blur-[0.5px] animate-particle-float-delayed" />
+          <div className="absolute top-[48%] left-[25%] w-1 h-1 rounded-full bg-teal-400 dark:bg-teal-300 blur-[0.5px] animate-particle-float-slow" />
+          <div className="absolute top-[58%] right-[22%] w-2 h-2 rounded-full bg-purple-400 dark:bg-purple-300 blur-[1.2px] opacity-65 animate-particle-float-delayed" />
+          <div className="absolute top-[68%] left-[18%] w-1.5 h-1.5 rounded-full bg-indigo-400 dark:bg-indigo-300 blur-[0.5px] animate-particle-float" />
+          <div className="absolute top-[78%] right-[15%] w-1.5 h-1.5 rounded-full bg-pink-400 dark:bg-rose-450 blur-[0.5px] animate-particle-float-slow" />
+          <div className="absolute top-[88%] left-[12%] w-1.5 h-1.5 rounded-full bg-cyan-400 dark:bg-cyan-300 blur-[0.5px] animate-particle-float-delayed" />
+          <div className="absolute top-[96%] right-[18%] w-2 h-2 rounded-full bg-amber-400 dark:bg-amber-300 blur-[1px] opacity-80 animate-particle-float" />
+        </div>
       </div>
+
+      {/* Interactive Gemini Sparkles click visual particles overlay */}
+      <AnimatePresence mode="popLayout">
+        {sparkles.map(spark => {
+          const rad = (spark.angle * Math.PI) / 180;
+          const targetX = Math.cos(rad) * spark.distance;
+          const targetY = Math.sin(rad) * spark.distance;
+
+          return (
+            <motion.div
+              key={spark.id}
+              initial={{ 
+                opacity: 0.9, 
+                scale: 0, 
+                x: spark.x, 
+                y: spark.y,
+                rotate: 0 
+              }}
+              animate={{ 
+                opacity: [0.9, 1, 0], 
+                scale: [0, spark.size / 12, 0], 
+                x: spark.x + targetX, 
+                y: spark.y + targetY,
+                rotate: spark.angle * 2 + 180
+              }}
+              exit={{ opacity: 0 }}
+              transition={{ 
+                duration: 0.9, 
+                delay: spark.delay, 
+                ease: [0.16, 1, 0.3, 1] 
+              }}
+              className="fixed pointer-events-none z-[100000]"
+              style={{
+                width: spark.size,
+                height: spark.size,
+                transform: 'translate(-50%, -50%)',
+                left: 0,
+                top: 0
+              }}
+            >
+              <svg 
+                viewBox="0 0 16 16" 
+                width="100%" 
+                height="100%" 
+                fill={spark.color}
+                style={{ filter: `drop-shadow(0 0 4px ${spark.color}aa)` }}
+              >
+                <path d="M8 0 L10 6 L16 8 L10 10 L8 16 L6 10 L0 8 L6 6 Z" />
+              </svg>
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
 
       {/* Navigation */}
       <Navbar 

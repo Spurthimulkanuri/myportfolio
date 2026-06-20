@@ -321,5 +321,53 @@
   }
 }
 
+/* Custom ambient pulses and gentle float keyframes */
+.animate-pulse-slow {
+  animation: pulseBlob 12s ease-in-out infinite;
+}
+
+.animate-pulse-delayed {
+  animation: pulseBlob 15s ease-in-out infinite 3s;
+}
+
+@keyframes pulseBlob {
+  0%, 100% {
+    transform: scale(1) translate(0px, 0px);
+    opacity: 0.8;
+  }
+  33% {
+    transform: scale(1.12) translate(15px, -15px);
+    opacity: 0.95;
+  }
+  66% {
+    transform: scale(0.92) translate(-15px, 20px);
+    opacity: 0.7;
+  }
+}
+
+/* Passive Floating background particles */
+.animate-particle-float {
+  animation: driftAndBreathe 8s ease-in-out infinite;
+}
+
+.animate-particle-float-slow {
+  animation: driftAndBreathe 11s ease-in-out infinite 1.5s;
+}
+
+.animate-particle-float-delayed {
+  animation: driftAndBreathe 9s ease-in-out infinite 3s;
+}
+
+@keyframes driftAndBreathe {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-20px) scale(1.3);
+    opacity: 0.95;
+  }
+}
+
 
 
