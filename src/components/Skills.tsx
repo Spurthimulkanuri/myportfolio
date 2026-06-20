@@ -14,7 +14,7 @@ export default function Skills({ isDarkMode }: SkillsProps) {
       viewport={{ once: true, margin: "-120px" }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       id="skills" 
-      className="py-24 bg-[#FAF9FC] dark:bg-[#070613] relative overflow-hidden z-10 select-none transition-colors duration-300"
+      className="py-24 bg-transparent relative overflow-hidden z-10 select-none transition-colors duration-300 border-t border-purple-100/30 dark:border-purple-900/20"
     >
       
       {/* Background ambient light circles for that modern premium glow */}

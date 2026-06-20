@@ -3,7 +3,7 @@ import { Calendar } from 'lucide-react';
 
 export default function Experience() {
   return (
-    <section id="experience" className="py-24 bg-white relative overflow-hidden">
+    <section id="experience" className="py-24 bg-transparent relative overflow-hidden">
       <div className="absolute top-1/4 right-0 w-96 h-96 bg-blue-50/50 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-1/4 left-10 w-80 h-80 bg-slate-50 rounded-full blur-2xl -z-10" />
 

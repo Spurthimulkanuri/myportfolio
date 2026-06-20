@@ -7,7 +7,7 @@ interface ProjectsProps {
 
 export default function Projects({ onSelectProject }: ProjectsProps) {
   return (
-    <section id="projects" className="py-24 bg-slate-50/50 relative overflow-hidden border-t border-b border-slate-100">
+    <section id="projects" className="py-24 bg-white/30 dark:bg-slate-900/20 backdrop-blur-[2px] relative overflow-hidden border-t border-b border-purple-100/30 dark:border-purple-900/20">
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-sky-50/40 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-50/30 rounded-full blur-3xl -z-10" />
 
@@ -38,6 +38,16 @@ export default function Projects({ onSelectProject }: ProjectsProps) {
                     isCounselor ? 'from-indigo-500 to-blue-500' : 'from-blue-500 to-teal-400'
                   }`}
                 />
+
+                {project.image && (
+                  <div className="w-full h-48 sm:h-56 overflow-hidden relative bg-slate-50 border-b border-slate-100">
+                    <img 
+                      src={project.image} 
+                      alt={project.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out" 
+                    />
+                  </div>
+                )}
 
                 <div className="p-6 sm:p-8 flex flex-col flex-grow space-y-5">
                   <div className="flex justify-between items-start gap-4">

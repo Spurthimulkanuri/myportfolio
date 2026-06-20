@@ -12,6 +12,8 @@ export interface Project {
   outcomes: string[];
   challenges: string[];
   futureScope: string[];
+  githubLink?: string;
+  image?: string;
 }
 
 export interface Skill {

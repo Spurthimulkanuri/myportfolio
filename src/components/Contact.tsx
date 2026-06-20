@@ -11,7 +11,7 @@ export default function Contact() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
 
@@ -30,19 +30,34 @@ export default function Contact() {
 
     setIsSubmitting(true);
 
-    // Mock API delay for immersive premium response feedback
-    setTimeout(() => {
+    try {
+      const response = await fetch('https://formspree.io/f/xrewzzrv', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ name, email, subject, message })
+      });
+
+      if (response.ok) {
+        setIsSuccess(true);
+        setName('');
+        setEmail('');
+        setSubject('');
+        setMessage('');
+      } else {
+        setErrorMsg('Oops! There was a problem delivering your message. Please try again.');
+      }
+    } catch (error) {
+      setErrorMsg('Oops! There was a network error. Please check your connection and try again.');
+    } finally {
       setIsSubmitting(false);
-      setIsSuccess(true);
-      setName('');
-      setEmail('');
-      setSubject('');
-      setMessage('');
-    }, 1200);
+    }
   };
 
   return (
-    <section id="contact" className="py-24 bg-slate-50/50 relative overflow-hidden border-t border-slate-100">
+    <section id="contact" className="py-24 bg-white/30 dark:bg-slate-900/20 backdrop-blur-[2px] relative overflow-hidden border-t border-purple-100/30 dark:border-purple-900/20">
       {/* Decorative gradient overlay layers */}
       <div className="absolute top-1/2 left-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-0 right-10 w-[450px] h-[450px] bg-teal-50/50 rounded-full blur-3xl -z-10" />
@@ -98,18 +113,7 @@ export default function Contact() {
                   </div>
                 </a>
 
-                <a
-                  href={`tel:${PERSONAL_INFO.phone}`}
-                  className="flex items-center gap-3.5 group text-sm text-slate-300 hover:text-white transition-colors cursor-pointer"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-teal-400 group-hover:scale-105 transition-transform shrink-0">
-                    <Phone className="w-4 h-4" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-bold">Telephone Number</span>
-                    <span className="font-semibold font-sans">{PERSONAL_INFO.phone}</span>
-                  </div>
-                </a>
+
 
                 <div className="flex items-center gap-3.5 text-sm text-slate-300">
                   <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-indigo-400 shrink-0">
@@ -153,7 +157,9 @@ export default function Contact() {
           </div>
 
           {/* Right panel: Validated dashboard messaging interface form (7 cols) */}
-          <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-100 p-8 sm:p-10 shadow-sm flex flex-col justify-between">
+          <div className="lg:col-span-7 bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl rounded-3xl border border-white/40 dark:border-slate-800/60 p-8 sm:p-10 shadow-2xl shadow-indigo-500/5 dark:shadow-black/20 flex flex-col justify-between relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-500/10 dark:bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
             
             {isSuccess ? (
               <div className="h-full flex flex-col items-center justify-center text-center space-y-5 py-12 animate-fade-in font-sans">
@@ -181,33 +187,35 @@ export default function Contact() {
                   
                   {/* Name field */}
                   <div className="space-y-1.5">
-                    <label htmlFor="form-name" className="text-xs font-semibold text-slate-700 font-sans block">
-                      Name <span className="text-red-500">*</span>
+                    <label htmlFor="form-name" className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-sans block">
+                      Name <span className="text-red-500 dark:text-red-400">*</span>
                     </label>
                     <input
                       type="text"
                       id="form-name"
+                      name="name"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. Ashok Kumar"
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200/80 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800/80 text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 shadow-sm hover:shadow-md"
                     />
                   </div>
 
                   {/* Email field */}
                   <div className="space-y-1.5">
-                    <label htmlFor="form-email" className="text-xs font-semibold text-slate-700 font-sans block">
-                      Email Address <span className="text-red-500">*</span>
+                    <label htmlFor="form-email" className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-sans block">
+                      Email Address <span className="text-red-500 dark:text-red-400">*</span>
                     </label>
                     <input
                       type="email"
                       id="form-email"
+                      name="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="e.g. recruiter@company.com"
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200/80 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800/80 text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 shadow-sm hover:shadow-md"
                     />
                   </div>
 
@@ -215,32 +223,34 @@ export default function Contact() {
 
                 {/* Subject field */}
                 <div className="space-y-1.5">
-                  <label htmlFor="form-subject" className="text-xs font-semibold text-slate-700 font-sans block">
+                  <label htmlFor="form-subject" className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-sans block">
                     Subject
                   </label>
                   <input
                     type="text"
                     id="form-subject"
+                    name="subject"
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     placeholder="e.g. Schedule Data Science Interview"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200/80 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800/80 text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 shadow-sm hover:shadow-md"
                   />
                 </div>
 
                 {/* Message field */}
                 <div className="space-y-1.5">
-                  <label htmlFor="form-message" className="text-xs font-semibold text-slate-700 font-sans block">
-                    Message <span className="text-red-500">*</span>
+                  <label htmlFor="form-message" className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-sans block">
+                    Message <span className="text-red-500 dark:text-red-400">*</span>
                   </label>
                   <textarea
                     id="form-message"
+                    name="message"
                     required
                     rows={4}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Describe your opening, key technologies, and schedule constraints..."
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200/80 text-sm placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all resize-none"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800/80 text-sm text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 shadow-sm hover:shadow-md resize-none"
                   />
                 </div>
 
@@ -256,7 +266,7 @@ export default function Contact() {
                   type="submit"
                   disabled={isSubmitting}
                   id="btn-contact-submit"
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-sm hover:shadow-lg disabled:opacity-50 transition-all cursor-pointer"
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 disabled:opacity-50 transition-all cursor-pointer border border-indigo-500/50"
                 >
                   <Send className="w-4 h-4 shrink-0" />
                   <span>{isSubmitting ? 'Transmitting Pipeline Data...' : 'Submit Message'}</span>

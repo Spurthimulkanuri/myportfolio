@@ -47,6 +47,8 @@ export default function App() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
   const [fadeRole, setFadeRole] = useState(true);
+  const [typedText, setTypedText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Gemini Sparkle interactive particles state
   const [sparkles, setSparkles] = useState<{
@@ -121,7 +123,7 @@ export default function App() {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('theme');
       if (saved) return saved === 'dark';
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return false; // Default to bright mode
     }
     return false;
   });
@@ -188,17 +190,30 @@ export default function App() {
     };
   }, []);
 
-  // Role cycler logic
+  // Typewriter role cycler logic
   useEffect(() => {
-    const interval = setInterval(() => {
-      setFadeRole(false);
-      setTimeout(() => {
-        setCurrentRoleIndex((prev) => (prev + 1) % PERSONAL_INFO.subRoles.length);
-        setFadeRole(true);
-      }, 300);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+    const currentRole = PERSONAL_INFO.subRoles[currentRoleIndex];
+    let timer: NodeJS.Timeout;
+
+    if (isDeleting) {
+      timer = setTimeout(() => {
+        setTypedText(currentRole.substring(0, typedText.length - 1));
+      }, 35);
+    } else {
+      timer = setTimeout(() => {
+        setTypedText(currentRole.substring(0, typedText.length + 1));
+      }, 70);
+    }
+
+    if (!isDeleting && typedText === currentRole) {
+      timer = setTimeout(() => setIsDeleting(true), 2200);
+    } else if (isDeleting && typedText === '') {
+      setIsDeleting(false);
+      setCurrentRoleIndex((prev) => (prev + 1) % PERSONAL_INFO.subRoles.length);
+    }
+
+    return () => clearTimeout(timer);
+  }, [typedText, isDeleting, currentRoleIndex]);
 
   // Intersection observer for current viewport section tracking
   useEffect(() => {
@@ -350,7 +365,7 @@ export default function App() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="min-h-screen relative bg-[#FAF9FC] dark:bg-[#07060F] text-[#1E293B] dark:text-[#E2E8F0] font-sans selection:bg-purple-100 dark:selection:bg-purple-900 selection:text-purple-950 dark:selection:text-purple-100 overflow-x-hidden transition-colors duration-300"
+          className="min-h-screen relative bg-[conic-gradient(at_top_right,_var(--tw-gradient-stops))] from-blue-50/80 via-white to-purple-50/80 dark:bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] dark:from-[#150a21] dark:via-[#05030a] dark:to-[#08101a] text-[#1E293B] dark:text-[#E2E8F0] font-sans selection:bg-purple-100 dark:selection:bg-purple-900 selection:text-purple-950 dark:selection:text-purple-100 overflow-x-hidden transition-colors duration-300"
         >
       {/* Ambient gradient backgrounds & gentle shimmering sparks across the entire website page height */}
       <div className="absolute inset-x-0 top-0 bottom-0 overflow-hidden pointer-events-none z-0">
@@ -473,18 +488,23 @@ export default function App() {
                       </span>
                     </h1>
                     
-                    {/* Secondary animated role line */}
-                    <div className="h-8 flex items-center pr-2 pt-1">
-                      <p className="text-sm sm:text-base font-semibold text-gray-700 tracking-wide font-mono flex flex-wrap gap-x-2">
-                        {PERSONAL_INFO.subRoles.map((role, idx) => (
-                          <span key={role} className="flex items-center">
-                            <span className={currentRoleIndex === idx ? "text-purple-600 font-bold" : "text-gray-400 font-normal"}>
+                    {/* Secondary animated role line with interactive typing */}
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 pt-1 text-xs sm:text-[13px] font-semibold font-mono text-gray-500 dark:text-gray-400">
+                      {PERSONAL_INFO.subRoles.map((role, idx) => (
+                        <div key={role} className="flex items-center">
+                          {currentRoleIndex === idx ? (
+                            <span className="text-purple-600 dark:text-purple-400 font-extrabold flex items-center relative px-1.5 py-0.5 bg-purple-50 dark:bg-purple-950/20 rounded-md border border-purple-100 dark:border-purple-900/30">
+                              <span>{typedText}</span>
+                              <span className="w-[1.5px] h-3.5 bg-purple-600 dark:bg-purple-400 ml-0.5 animate-pulse" />
+                            </span>
+                          ) : (
+                            <span className="text-gray-400 dark:text-gray-600 font-medium px-1.5 py-0.5">
                               {role}
                             </span>
-                            {idx < PERSONAL_INFO.subRoles.length - 1 && <span className="text-gray-300 ml-2">|</span>}
-                          </span>
-                        ))}
-                      </p>
+                          )}
+                          {idx < PERSONAL_INFO.subRoles.length - 1 && <span className="text-gray-300 dark:text-gray-700 ml-1">|</span>}
+                        </div>
+                      ))}
                     </div>
                   </div>
 
@@ -559,6 +579,43 @@ export default function App() {
                   <div className="absolute w-[340px] sm:w-[400px] h-[340px] sm:h-[400px] rounded-full border border-purple-100/60 animate-orbit-cw pointer-events-none" />
                   <div className="absolute w-[280px] sm:w-[330px] h-[280px] sm:h-[330px] rounded-full border border-dashed border-pink-200/40 animate-orbit-ccw pointer-events-none" />
                   
+                  {/* Floating Animated Orbits Icons */}
+                  <motion.div 
+                    animate={{ y: [-8, 8, -8], x: [-4, 4, -4] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute top-[8%] left-[8%] w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-650 dark:text-blue-400 flex items-center justify-center shadow-sm z-25 border border-blue-100/50 dark:border-blue-800/30 font-bold text-xs"
+                    title="Python"
+                  >
+                    <span>🐍</span>
+                  </motion.div>
+                  
+                  <motion.div 
+                    animate={{ y: [8, -8, 8], x: [4, -4, 4] }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                    className="absolute bottom-[25%] left-[-15px] w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-650 dark:text-indigo-400 flex items-center justify-center shadow-sm z-25 border border-indigo-100/50 dark:border-indigo-800/30"
+                    title="Machine Learning"
+                  >
+                    <Cpu className="w-4 h-4" />
+                  </motion.div>
+
+                  <motion.div 
+                    animate={{ y: [-6, 6, -6], x: [3, -3, 3] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                    className="absolute top-[35%] right-[10%] w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-purple-650 dark:text-purple-400 flex items-center justify-center shadow-sm z-25 border border-purple-100/50 dark:border-purple-800/30"
+                    title="Generative AI"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                  </motion.div>
+
+                  <motion.div 
+                    animate={{ y: [6, -6, 6], x: [-3, 3, -3] }}
+                    transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+                    className="absolute bottom-[5%] right-[25%] w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-650 dark:text-emerald-400 flex items-center justify-center shadow-sm z-25 border border-emerald-100/50 dark:border-emerald-800/30"
+                    title="Data Analysis"
+                  >
+                    <Database className="w-4 h-4" />
+                  </motion.div>
+
                   {/* Interactive Currently Exploring Tech Widget */}
                   <div className="absolute bottom-1 bg-white/90 backdrop-blur-md border border-gray-150 py-2.5 px-4 rounded-2xl shadow-md z-20 flex flex-col items-center gap-1.5 animate-float-delayed">
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Currently Exploring</span>
@@ -687,7 +744,7 @@ export default function App() {
               </div>
             </motion.section>
 
-            {/* NEW ABOUT ME SECTION - Replicating the uploaded design perfectly without needing a complex profile image */}
+            {/* NEW ABOUT ME SECTION - Redesigned based on user image */}
             <motion.section
               initial={{ opacity: 0, y: 35 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -701,237 +758,305 @@ export default function App() {
                 <div className="absolute top-10 right-10 w-96 h-96 rounded-full bg-purple-200/5 dark:bg-purple-900/5 blur-3xl pointer-events-none" />
                 <div className="absolute bottom-10 left-10 w-96 h-96 rounded-full bg-blue-200/5 dark:bg-blue-900/5 blur-3xl pointer-events-none" />
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-                  {/* Left Column - Main Intro & Details (Takes 6 cols) */}
-                  <div className="lg:col-span-6 space-y-6">
-                    <div className="space-y-2">
-                      <span className="text-xs font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 uppercase font-mono">
-                        ABOUT ME
-                      </span>
-                      <h2 className="text-4xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
-                        About <span className="bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 bg-clip-text text-transparent">Me</span>
-                      </h2>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-12">
+                  {/* Left Column - Image & Floating Elements (Takes 5 cols) */}
+                  <div className="lg:col-span-5 relative flex justify-center items-center py-10">
+                    
+                    {/* Floating Badges & Icons */}
+                    <motion.div 
+                      animate={{ y: [-5, 5, -5] }} 
+                      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                      className="absolute top-0 left-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-gray-150 dark:border-slate-800 py-2 px-4 rounded-xl shadow-md z-20 flex items-center gap-2"
+                    >
+                      <span className="text-xs">✨</span>
+                      <span className="text-xs font-bold text-indigo-700 dark:text-indigo-400">Aspiring Data Scientist</span>
+                    </motion.div>
+
+                    <motion.div 
+                      animate={{ y: [5, -5, 5] }} 
+                      transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                      className="absolute top-[30%] right-[-10px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-gray-150 dark:border-slate-800 py-2 px-4 rounded-xl shadow-md z-20 flex items-center gap-2"
+                    >
+                      <span className="text-xs">🚀</span>
+                      <span className="text-xs font-bold text-purple-700 dark:text-purple-400">Machine Learning<br/><span className="text-[9px] font-normal text-gray-500 dark:text-gray-400">Enthusiast</span></span>
+                    </motion.div>
+
+                    <motion.div 
+                      animate={{ y: [-4, 4, -4] }} 
+                      transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+                      className="absolute bottom-[20%] left-[-20px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-gray-150 dark:border-slate-800 py-2 px-4 rounded-xl shadow-md z-20 flex items-center gap-2"
+                    >
+                      <span className="text-xs">🤖</span>
+                      <span className="text-xs font-bold text-blue-700 dark:text-blue-400">Generative AI</span>
+                    </motion.div>
+                    
+                    <div className="absolute top-[15%] right-[20%] w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/50 flex items-center justify-center font-bold text-blue-600 dark:text-blue-400 text-[10px] shadow-sm animate-float-delayed">SQL</div>
+                    
+                    <div className="absolute top-[20%] left-[10%] w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800/50 flex items-center justify-center shadow-sm animate-float">
+                      <span className="text-amber-500 text-xl">🐍</span>
                     </div>
 
-                    <div className="space-y-4">
-                      <p className="text-lg font-medium text-slate-800 dark:text-slate-200 leading-relaxed font-sans border-l-4 border-indigo-500 pl-4 py-1">
+                    {/* Central Education Animation Frame */}
+                    <div className="relative w-[320px] h-[320px] sm:w-[380px] sm:h-[380px] rounded-3xl bg-gradient-to-b from-purple-50 to-indigo-50/30 dark:from-purple-900/20 dark:to-indigo-900/20 p-2 shadow-xl z-10 border border-white dark:border-slate-800 flex items-center justify-center overflow-hidden">
+                      {/* Grid Background Pattern */}
+                      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiNDQkQ1RTEiIGZpbGwtb3BhY2l0eT0iMC41Ii8+PC9zdmc+')] dark:bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiMzMzQxNTUiIGZpbGwtb3BhY2l0eT0iMC41Ii8+PC9zdmc+')] opacity-60" />
+                      
+                      {/* Ambient Glow */}
+                      <div className="absolute w-64 h-64 bg-indigo-400/20 dark:bg-indigo-500/10 rounded-full blur-3xl animate-pulse" />
+                      
+                      <div className="relative z-10 flex flex-col items-center justify-center h-full w-full">
+                        {/* Graduation Cap */}
+                        <motion.div
+                          animate={{ y: [-10, 10, -10], rotate: [-2, 2, -2] }}
+                          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                          className="absolute top-[20%] z-30"
+                        >
+                          <div className="w-24 h-24 sm:w-28 sm:h-28 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-xl shadow-indigo-500/30 border border-indigo-400">
+                            <GraduationCap className="w-12 h-12 sm:w-14 sm:h-14 text-white" />
+                          </div>
+                        </motion.div>
+
+                        {/* Diploma / Certificate */}
+                        <motion.div
+                          animate={{ y: [10, -10, 10], x: [5, -5, 5], rotate: [5, -5, 5] }}
+                          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                          className="absolute top-[45%] right-[15%] z-20"
+                        >
+                          <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-3xl flex items-center justify-center shadow-lg shadow-emerald-500/30 border border-emerald-300">
+                            <Award className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+                          </div>
+                        </motion.div>
+
+                        {/* Books / Knowledge Base */}
+                        <motion.div
+                          animate={{ y: [-8, 8, -8], x: [-5, 5, -5], rotate: [-4, 4, -4] }}
+                          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                          className="absolute top-[40%] left-[15%] z-20"
+                        >
+                          <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-pink-500 to-rose-500 rounded-3xl flex items-center justify-center shadow-lg shadow-pink-500/30 border border-pink-400">
+                            <FileText className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+                          </div>
+                        </motion.div>
+                        
+                        {/* Base glowing platform */}
+                        <motion.div
+                          animate={{ scale: [0.9, 1.1, 0.9], opacity: [0.4, 0.7, 0.4] }}
+                          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                          className="absolute bottom-[15%] w-48 h-12 bg-indigo-500/30 dark:bg-indigo-500/40 rounded-[100%] blur-xl"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Code Snippet Box */}
+                    <div className="absolute left-[-30px] top-[45%] w-[160px] p-3 rounded-xl bg-white/95 dark:bg-slate-900/95 border border-gray-100 dark:border-slate-800 shadow-lg z-20 text-[8px] font-mono text-gray-600 dark:text-gray-400 animate-float-slow">
+                      <p><span className="text-indigo-500 dark:text-indigo-400">import</span> pandas <span className="text-indigo-500 dark:text-indigo-400">as</span> pd</p>
+                      <p><span className="text-indigo-500 dark:text-indigo-400">import</span> numpy <span className="text-indigo-500 dark:text-indigo-400">as</span> np</p>
+                      <p><span className="text-indigo-500 dark:text-indigo-400">from</span> sklearn.model_selection...</p>
+                      <p><span className="text-indigo-500 dark:text-indigo-400">import</span> train_test_split</p>
+                      <div className="text-right mt-1 text-gray-400 dark:text-gray-500 font-bold">&lt;/&gt;</div>
+                    </div>
+
+                  </div>
+
+                  {/* Right Column - Text & Education (Takes 7 cols) */}
+                  <div className="lg:col-span-7 space-y-8 pl-0 lg:pl-8">
+                    
+                    <div className="space-y-4 text-center sm:text-left">
+                      <span className="text-[11px] font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 uppercase font-sans">
+                        ABOUT ME
+                      </span>
+                      <h2 className="text-5xl font-display font-extrabold text-slate-900 dark:text-white tracking-tight">
+                        About <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 bg-clip-text text-transparent">Me</span>
+                      </h2>
+                      
+                      <p className="text-[15px] font-medium text-slate-600 dark:text-slate-300 leading-relaxed font-sans max-w-2xl mx-auto sm:mx-0">
                         Turning Data into Intelligent Solutions through Machine Learning, Artificial Intelligence and Data Analytics.
                       </p>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-normal">
+                      
+                      <p className="text-[13px] text-slate-500 dark:text-slate-400 leading-relaxed font-normal max-w-2xl mx-auto sm:mx-0">
                         Aspiring Data Scientist with hands-on experience in Machine Learning and Generative AI. Passionate about transforming complex data into meaningful insights and building intelligent AI-driven solutions. Skilled in Python, SQL, Data Analysis, Predictive Modeling, and modern AI technologies with a strong focus on solving real-world problems.
                       </p>
                     </div>
 
-                    {/* Quick Stats Grid inside left column */}
-                    <div className="pt-6 border-t border-gray-100 dark:border-purple-950/20 space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {/* Stat 1 */}
+                    <div className="pt-4">
+                      <div className="flex items-center gap-3 pb-4 justify-center sm:justify-start">
+                        <div className="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-500 flex items-center justify-center shrink-0">
+                          <GraduationCap className="w-4 h-4" />
+                        </div>
+                        <h3 className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">
+                          Education
+                        </h3>
+                      </div>
+
+                      {/* Education Cards - Horizontal Layout (Improved) */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                        
+                        {/* Card 1: BTech */}
                         <motion.div 
-                          whileHover={{ y: -3 }}
-                          className="bg-gray-50/50 dark:bg-slate-900/45 p-4 rounded-2xl border border-gray-150/65 dark:border-purple-950/20 flex flex-col items-center text-center group transition-all"
+                          whileHover={{ y: -6, scale: 1.02 }} 
+                          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                          className="bg-white dark:bg-slate-900 rounded-[24px] border border-gray-150 dark:border-slate-800 p-5 relative overflow-hidden shadow-sm hover:shadow-xl hover:shadow-blue-500/10 flex flex-col justify-between min-h-[190px] group transition-all duration-300"
                         >
-                          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-500 flex items-center justify-center mb-3 group-hover:bg-blue-105 transition-colors">
-                            <Cpu className="w-5 h-5" />
+                          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-500 opacity-80" />
+                          <div className="absolute -right-10 -top-10 w-32 h-32 bg-blue-50 dark:bg-blue-900/10 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity" />
+                          
+                          <div className="relative z-10">
+                            <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4 shadow-inner border border-blue-100 dark:border-blue-800/50">
+                              <GraduationCap className="w-5 h-5" />
+                            </div>
+                            <h4 className="font-extrabold text-slate-900 dark:text-slate-100 text-sm leading-tight mb-1">Bachelor of Technology</h4>
+                            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Computer Science & Engineering</p>
+                            <p className="text-[11px] font-medium text-slate-600 dark:text-slate-500 leading-snug mb-3">Rajiv Gandhi University of Knowledge Technologies – Basar</p>
+                            <div className="flex items-center gap-1.5 text-[10px] font-mono font-semibold text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 w-fit px-2 py-1 rounded-md">
+                              <Calendar className="w-3 h-3" />
+                              <span>2022 - 2026</span>
+                            </div>
                           </div>
-                          <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold font-mono">Current Role</span>
-                          <span className="text-[12px] font-extrabold text-slate-800 dark:text-slate-200 mt-1 whitespace-nowrap">Data Science Intern</span>
+                          <div className="mt-4 pt-3 border-t border-gray-100 dark:border-slate-800 flex items-end justify-between relative z-10">
+                            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">CGPA</span>
+                            <span className="text-xl font-black text-blue-600 dark:text-blue-400 drop-shadow-sm">8.54</span>
+                          </div>
+                          
+                          {/* University Building Silhouette */}
+                          <div className="absolute right-2 bottom-12 opacity-[0.03] dark:opacity-[0.02] text-blue-900 w-24 h-24 pointer-events-none transform translate-y-4 group-hover:translate-y-2 transition-transform duration-500">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72l5 2.73 5-2.73v3.72z"/></svg>
+                          </div>
                         </motion.div>
 
-                        {/* Stat 2 */}
+                        {/* Card 2: PUC */}
                         <motion.div 
-                          whileHover={{ y: -3 }}
-                          className="bg-gray-50/50 dark:bg-slate-900/45 p-4 rounded-2xl border border-gray-150/65 dark:border-purple-950/20 flex flex-col items-center text-center group transition-all"
+                          whileHover={{ y: -6, scale: 1.02 }} 
+                          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                          className="bg-white dark:bg-slate-900 rounded-[24px] border border-gray-150 dark:border-slate-800 p-5 relative overflow-hidden shadow-sm hover:shadow-xl hover:shadow-purple-500/10 flex flex-col justify-between min-h-[190px] group transition-all duration-300"
                         >
-                          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/20 text-purple-500 flex items-center justify-center mb-3 group-hover:bg-purple-105 transition-colors">
-                            <Database className="w-5 h-5" />
+                          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-400 to-pink-500 opacity-80" />
+                          <div className="absolute -right-10 -top-10 w-32 h-32 bg-purple-50 dark:bg-purple-900/10 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity" />
+                          
+                          <div className="relative z-10">
+                            <div className="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-4 shadow-inner border border-purple-100 dark:border-purple-800/50">
+                              <Award className="w-5 h-5" />
+                            </div>
+                            <h4 className="font-extrabold text-slate-900 dark:text-slate-100 text-sm leading-tight mb-1">Pre University Course</h4>
+                            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Higher Education</p>
+                            <p className="text-[11px] font-medium text-slate-600 dark:text-slate-500 leading-snug mb-3">RGUKT Basar</p>
+                            <div className="flex items-center gap-1.5 text-[10px] font-mono font-semibold text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 w-fit px-2 py-1 rounded-md">
+                              <Calendar className="w-3 h-3" />
+                              <span>2020 - 2022</span>
+                            </div>
                           </div>
-                          <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold font-mono">Data Processed</span>
-                          <span className="text-[13px] font-extrabold text-slate-800 dark:text-slate-200 mt-1">11,000+ Records</span>
+                          <div className="mt-4 pt-3 border-t border-gray-100 dark:border-slate-800 flex items-end justify-between relative z-10">
+                            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">CGPA</span>
+                            <span className="text-xl font-black text-purple-600 dark:text-purple-400 drop-shadow-sm">8.9</span>
+                          </div>
+                          
+                          {/* College Building Silhouette */}
+                          <div className="absolute right-2 bottom-12 opacity-[0.03] dark:opacity-[0.02] text-purple-900 w-24 h-24 pointer-events-none transform translate-y-4 group-hover:translate-y-2 transition-transform duration-500">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2zm0-8h-2V7h2z"/></svg>
+                          </div>
                         </motion.div>
 
-                        {/* Stat 3 */}
+                        {/* Card 3: School */}
                         <motion.div 
-                          whileHover={{ y: -3 }}
-                          className="bg-gray-50/50 dark:bg-slate-900/45 p-4 rounded-2xl border border-gray-150/65 dark:border-purple-950/20 flex flex-col items-center text-center group transition-all"
+                          whileHover={{ y: -6, scale: 1.02 }} 
+                          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                          className="bg-white dark:bg-slate-900 rounded-[24px] border border-gray-150 dark:border-slate-800 p-5 relative overflow-hidden shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 flex flex-col justify-between min-h-[190px] group transition-all duration-300"
                         >
-                          <div className="w-10 h-10 rounded-xl bg-pink-50 dark:bg-pink-900/20 text-pink-500 flex items-center justify-center mb-3 group-hover:bg-pink-105 transition-colors">
-                            <Sparkles className="w-5 h-5" />
+                          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-500 opacity-80" />
+                          <div className="absolute -right-10 -top-10 w-32 h-32 bg-emerald-50 dark:bg-emerald-900/10 rounded-full blur-3xl opacity-50 group-hover:opacity-100 transition-opacity" />
+                          
+                          <div className="relative z-10">
+                            <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4 shadow-inner border border-emerald-100 dark:border-emerald-800/50">
+                              <Trophy className="w-5 h-5" />
+                            </div>
+                            <h4 className="font-extrabold text-slate-900 dark:text-slate-100 text-sm leading-tight mb-1">Secondary School</h4>
+                            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">High School Education</p>
+                            <p className="text-[11px] font-medium text-slate-600 dark:text-slate-500 leading-snug mb-3">T.S. Model School</p>
+                            <div className="flex items-center gap-1.5 text-[10px] font-mono font-semibold text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 w-fit px-2 py-1 rounded-md">
+                              <Calendar className="w-3 h-3" />
+                              <span>2020</span>
+                            </div>
                           </div>
-                          <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold font-mono">AI Systems</span>
-                          <span className="text-[13px] font-extrabold text-slate-800 dark:text-slate-200 mt-1">2+ Completed</span>
+                          <div className="mt-4 pt-3 border-t border-gray-100 dark:border-slate-800 flex items-end justify-between relative z-10">
+                            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">CGPA</span>
+                            <span className="text-xl font-black text-emerald-600 dark:text-emerald-400 drop-shadow-sm">10.0</span>
+                          </div>
+                          
+                          {/* School Building Silhouette */}
+                          <div className="absolute right-2 bottom-12 opacity-[0.03] dark:opacity-[0.02] text-emerald-900 w-24 h-24 pointer-events-none transform translate-y-4 group-hover:translate-y-2 transition-transform duration-500">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                          </div>
                         </motion.div>
+
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  {/* Right Column - Education Subsection (Takes 6 cols) */}
-                  <div className="lg:col-span-6 space-y-6">
-                    <div className="flex items-center gap-3 pb-2 border-b border-gray-100 dark:border-purple-950/20">
-                      <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-500 flex items-center justify-center shrink-0 shadow-xs">
-                        <GraduationCap className="w-4.5 h-4.5" />
-                      </div>
-                      <h3 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                        Education
-                      </h3>
+                {/* Bottom Horizontal Stats Bar */}
+                <div className="w-full bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 rounded-3xl shadow-sm p-4 sm:p-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-4 divide-y sm:divide-y-0 sm:divide-x divide-gray-100 dark:divide-slate-800">
+                  
+                  <div className="flex-1 flex items-center justify-center sm:justify-start gap-4 w-full">
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 flex items-center justify-center shrink-0">
+                      <Cpu className="w-6 h-6" />
                     </div>
-
-                    <div className="space-y-4">
-                      {/* BTech Card */}
-                      <motion.div 
-                        whileHover={{ x: 4, scale: 1.01 }}
-                        className="bg-blue-50/40 dark:bg-blue-950/5 rounded-2xl border border-blue-100/50 dark:border-blue-900/10 p-5 relative overflow-hidden group transition-all shadow-sm"
-                      >
-                        {/* Decorative background school elements */}
-                        <div className="absolute right-[-20px] bottom-[-20px] w-32 h-32 opacity-5 dark:opacity-[0.02] text-blue-500 pointer-events-none">
-                          <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
-                            <path d="M12 3a1 1 0 00-1 1v.062L3.22 7.281a1 1 0 000 1.438L11 11.938V20a1 1 0 002 0v-8.062l7.78-3.219a1 1 0 000-1.438L13 4.062V4a1 1 0 00-1-1z" />
-                          </svg>
-                        </div>
-
-                        <div className="flex gap-4 items-start relative z-10">
-                          <div className="w-10 h-10 rounded-full bg-blue-105/80 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 shadow-xs">
-                            <GraduationCap className="w-5 h-5" />
-                          </div>
-                          <div className="space-y-1.5 flex-1">
-                            <div className="flex justify-between items-start gap-4 flex-wrap">
-                              <h4 className="font-extrabold text-[#1E293B] dark:text-slate-100 text-sm tracking-tight leading-none">
-                                Bachelor of Technology
-                              </h4>
-                              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-blue-105 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
-                                2022 – 2026
-                              </span>
-                            </div>
-                            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                              Computer Science & Engineering
-                            </p>
-                            <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
-                              Rajiv Gandhi University of Knowledge Technologies – Basar
-                            </p>
-                            
-                            <div className="pt-2 flex items-center gap-1.5">
-                              <span className="text-[10px] font-bold text-slate-400">CGPA:</span>
-                              <span className="text-xs font-extrabold text-blue-600 dark:text-blue-400 bg-blue-100/30 dark:bg-blue-900/20 px-2 py-0.5 rounded">
-                                8.54
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-
-                      {/* Pre Uni Card */}
-                      <motion.div 
-                        whileHover={{ x: 4, scale: 1.01 }}
-                        className="bg-purple-50/40 dark:bg-purple-950/5 rounded-2xl border border-purple-100/50 dark:border-purple-900/10 p-5 relative overflow-hidden group transition-all shadow-sm"
-                      >
-                        {/* Decorative background shape */}
-                        <div className="absolute right-[-20px] bottom-[-20px] w-32 h-32 opacity-5 dark:opacity-[0.02] text-purple-500 pointer-events-none">
-                          <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
-                            <path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm1 14h-2v-4h2zm0-6h-2V7h2z" />
-                          </svg>
-                        </div>
-
-                        <div className="flex gap-4 items-start relative z-10">
-                          <div className="w-10 h-10 rounded-full bg-purple-105/80 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 shadow-xs">
-                            <Award className="w-5 h-5" />
-                          </div>
-                          <div className="space-y-1.5 flex-1">
-                            <div className="flex justify-between items-start gap-4 flex-wrap">
-                              <h4 className="font-extrabold text-[#1E293B] dark:text-slate-100 text-sm tracking-tight leading-none">
-                                Pre University Course
-                              </h4>
-                              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-purple-105 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
-                                2020 – 2022
-                              </span>
-                            </div>
-                            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                              RGUKT Basar
-                            </p>
-                            
-                            <div className="pt-2 flex items-center gap-1.5">
-                              <span className="text-[10px] font-bold text-slate-400">CGPA:</span>
-                              <span className="text-xs font-extrabold text-purple-600 dark:text-purple-400 bg-purple-100/30 dark:bg-purple-900/20 px-2 py-0.5 rounded">
-                                8.9
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-
-                      {/* Secondary School Card */}
-                      <motion.div 
-                        whileHover={{ x: 4, scale: 1.01 }}
-                        className="bg-emerald-50/40 dark:bg-emerald-950/5 rounded-2xl border border-emerald-100/50 dark:border-emerald-900/10 p-5 relative overflow-hidden group transition-all shadow-sm"
-                      >
-                        {/* Decorative background shape */}
-                        <div className="absolute right-[-20px] bottom-[-20px] w-32 h-32 opacity-5 dark:opacity-[0.02] text-emerald-500 pointer-events-none">
-                          <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2zm0-8h-2V7h2z" />
-                          </svg>
-                        </div>
-
-                        <div className="flex gap-4 items-start relative z-10">
-                          <div className="w-10 h-10 rounded-full bg-emerald-110/80 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 shadow-xs">
-                            <Trophy className="w-5 h-5" />
-                          </div>
-                          <div className="space-y-1.5 flex-1">
-                            <div className="flex justify-between items-start gap-4 flex-wrap">
-                              <h4 className="font-extrabold text-[#1E293B] dark:text-slate-100 text-sm tracking-tight leading-none">
-                                Secondary School
-                              </h4>
-                              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-110 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
-                                2020
-                              </span>
-                            </div>
-                            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                              T.S. Model School
-                            </p>
-                            
-                            <div className="pt-2 flex items-center gap-1.5">
-                              <span className="text-[10px] font-bold text-slate-400">CGPA:</span>
-                              <span className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-100/30 dark:bg-emerald-900/20 px-2 py-0.5 rounded">
-                                10.0
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
+                    <div>
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Current Role</p>
+                      <h4 className="text-lg font-extrabold text-indigo-700 dark:text-indigo-400 leading-none">Data Science Intern</h4>
                     </div>
                   </div>
+                  
+                  <div className="flex-1 flex items-center justify-center sm:justify-start gap-4 pt-4 sm:pt-0 sm:pl-8 w-full">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-900/30 text-blue-500 flex items-center justify-center shrink-0">
+                      <Database className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Records Processed</p>
+                      <h4 className="text-xl font-extrabold text-slate-800 dark:text-slate-200 leading-none">11,000+</h4>
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 flex items-center justify-center sm:justify-start gap-4 pt-4 sm:pt-0 sm:pl-8 w-full">
+                    <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-900/30 text-purple-500 flex items-center justify-center shrink-0">
+                      <Sparkles className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">AI Projects</p>
+                      <h4 className="text-xl font-extrabold text-slate-800 dark:text-slate-200 leading-none">2+</h4>
+                    </div>
+                  </div>
+                  
                 </div>
 
                 {/* Tech Skills Pills Row at Bottom of About Me */}
-                <div className="mt-12 pt-8 border-t border-gray-100 dark:border-purple-950/20">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 block mb-4 text-center">
-                    CORE SCIENTIFIC TOOLKITS & SKILLSET
-                  </span>
-                  <div className="flex flex-wrap justify-center gap-2.5 max-w-4xl mx-auto">
-                    {[
-                      { name: 'Python', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-300/30' },
-                      { name: 'SQL', color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-300/30' },
-                      { name: 'Pandas', color: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-300/30' },
-                      { name: 'NumPy', color: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-300/30' },
-                      { name: 'Scikit-learn', color: 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-300/30' },
-                      { name: 'TensorFlow', color: 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-300/30' },
-                      { name: 'Matplotlib', color: 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-300/30' },
-                      { name: 'Seaborn', color: 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-300/30' },
-                      { name: 'Streamlit', color: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-300/30' },
-                      { name: 'Jupyter', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-300/30' },
-                      { name: 'ChatGPT / LLMs', color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-300/30' }
-                    ].map((pill, idx) => (
-                      <motion.span
-                        key={pill.name}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: idx * 0.04 }}
-                        whileHover={{ scale: 1.05 }}
-                        className={`px-3 py-1.5 rounded-full border text-xs font-semibold ${pill.color} shadow-xs select-none cursor-default transition-all duration-300`}
-                      >
-                        {pill.name}
-                      </motion.span>
-                    ))}
-                  </div>
+                <div className="flex flex-wrap justify-center gap-2.5 max-w-5xl mx-auto pb-4">
+                  {[
+                    { name: 'Python', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-300/30' },
+                    { name: 'SQL', color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-300/30' },
+                    { name: 'Pandas', color: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-300/30' },
+                    { name: 'NumPy', color: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-300/30' },
+                    { name: 'Scikit-learn', color: 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-300/30' },
+                    { name: 'TensorFlow', color: 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-300/30' },
+                    { name: 'Matplotlib', color: 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-300/30' },
+                    { name: 'Seaborn', color: 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-300/30' },
+                    { name: 'Streamlit', color: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-300/30' },
+                    { name: 'Jupyter', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-300/30' },
+                    { name: 'ChatGPT', color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-300/30' }
+                  ].map((pill, idx) => (
+                    <motion.span
+                      key={pill.name}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: idx * 0.04 }}
+                      whileHover={{ scale: 1.05 }}
+                      className={`px-3 py-1.5 rounded-full border bg-white dark:bg-transparent text-[11px] font-bold ${pill.color} shadow-xs select-none cursor-default transition-all duration-300 flex items-center gap-1.5`}
+                    >
+                      <div className="w-1.5 h-1.5 rounded-full bg-current opacity-60"></div>
+                      {pill.name}
+                    </motion.span>
+                  ))}
                 </div>
+
               </div>
             </motion.section>
 
@@ -1664,18 +1789,6 @@ export default function App() {
                             <p className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest font-mono">Email Direct</p>
                             <a href={`mailto:${PERSONAL_INFO.email}`} className="text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">
                               {PERSONAL_INFO.email}
-                            </a>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950/40 border border-teal-100 dark:border-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400 shrink-0 shadow-xs">
-                            <Phone className="w-4.5 h-4.5" />
-                          </div>
-                          <div>
-                            <p className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest font-mono">Phone Direct</p>
-                            <a href={`tel:${PERSONAL_INFO.phone}`} className="text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
-                              {PERSONAL_INFO.phone}
                             </a>
                           </div>
                         </div>

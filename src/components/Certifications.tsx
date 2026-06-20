@@ -3,7 +3,7 @@ import { Award, ShieldCheck, CheckCircle2, Link } from 'lucide-react';
 
 export default function Certifications() {
   return (
-    <section id="certifications" className="py-24 bg-slate-50/50 relative overflow-hidden border-t border-slate-100/50">
+    <section id="certifications" className="py-24 bg-transparent relative overflow-hidden border-t border-purple-100/30 dark:border-purple-900/20">
       {/* Soft abstract graphic background elements */}
       <div className="absolute top-1/2 left-10 w-72 h-72 bg-blue-50/40 rounded-full blur-3xl -z-10" />
 

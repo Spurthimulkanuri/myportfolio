@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PERSONAL_INFO } from '../data';
-import { ArrowRight, Code, Database, Brain, Sparkles } from 'lucide-react';
+import { ArrowRight, Code, Database, Brain, Sparkles, BarChart3, Bot, Search, Network } from 'lucide-react';
 
 interface HeroProps {
   onViewProjects: () => void;
@@ -44,7 +44,7 @@ export default function Hero({ onViewProjects, onContactMe }: HeroProps) {
   return (
     <section
       id="home"
-      className="relative min-h-screen pt-28 pb-16 flex items-center justify-center overflow-hidden bg-gradient-to-b from-white via-slate-50 to-white"
+      className="relative min-h-screen pt-28 pb-16 flex items-center justify-center overflow-hidden bg-transparent"
     >
       {/* Decorative premium blobs */}
       <div className="absolute top-1/4 left-10 w-96 h-96 bg-blue-100/40 rounded-full blur-3xl -z-10 animate-pulse duration-[6000ms]" />
@@ -132,40 +132,75 @@ export default function Hero({ onViewProjects, onContactMe }: HeroProps) {
 
           {/* Hero Right Graphic */}
           <div className="lg:col-span-5 flex justify-center items-center">
-            <div className="relative w-72 h-72 sm:w-80 sm:h-80 lg:w-96 lg:h-96 group">
-              {/* Outer orbit rings */}
-              <div className="absolute inset-0 rounded-full border border-blue-100 animate-spin" style={{ animationDuration: '40s' }} />
+            <div className="relative w-80 h-80 sm:w-96 sm:h-96 lg:w-[450px] lg:h-[450px] group flex justify-center items-center mt-8 lg:mt-0">
               
-              {/* Interactive nodes */}
-              <div className="absolute top-0 left-12 w-8 h-8 rounded-full bg-white shadow-lg flex items-center justify-center border border-slate-100 text-blue-600">
-                <Code className="w-4 h-4" />
-              </div>
-              <div className="absolute bottom-12 right-2 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center border border-slate-100 text-teal-600">
-                <Database className="w-5 h-5" />
-              </div>
-              <div className="absolute top-1/2 -right-4 w-11 h-11 rounded-full bg-indigo-50 shadow-md flex items-center justify-center text-indigo-600">
-                <Brain className="w-5 h-5" />
-              </div>
-              <div className="absolute bottom-4 left-10 w-9 h-9 rounded-full bg-teal-50 shadow-md flex items-center justify-center text-teal-500">
-                <Sparkles className="w-4 h-4" />
+              {/* Outer Orbit Ring 2 */}
+              <div className="absolute inset-[-10px] sm:inset-[-20px] rounded-full border border-dashed border-purple-200/70 dark:border-purple-600/30 animate-[spin_120s_linear_infinite_reverse]">
+                {/* Dots on orbit */}
+                <div className="absolute top-[10%] left-[10%] w-1.5 h-1.5 rounded-full bg-fuchsia-400" />
+                <div className="absolute bottom-[20%] right-[10%] w-2 h-2 rounded-full bg-purple-400" />
+                <div className="absolute bottom-[5%] left-[30%] w-1.5 h-1.5 rounded-full bg-pink-400" />
               </div>
 
-              {/* Central Premium Profile illustration */}
-              <div className="absolute inset-6 rounded-full bg-gradient-to-tr from-blue-100 via-white to-teal-50 p-1.5 shadow-xl">
-                <div className="w-full h-full rounded-full bg-sky-50 overflow-hidden flex flex-col justify-center items-center relative border border-white">
-                  <img 
-                    src="https://ik.imagekit.io/njxa1mbn3/SM.png" 
-                    alt="Spurthi Mulkanuri" 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute bottom-4 left-0 right-0 text-center z-10 px-2">
-                    <span className="inline-block bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[11px] font-mono font-bold text-slate-800 shadow-sm border border-slate-100">
-                      Hyderabad, India
-                    </span>
+              {/* Inner Orbit Ring 1 */}
+              <div className="absolute inset-10 sm:inset-12 rounded-full border border-dashed border-indigo-200/70 dark:border-indigo-600/30 animate-[spin_90s_linear_infinite]">
+                {/* Dots on orbit */}
+                <div className="absolute top-[20%] right-[15%] w-2 h-2 rounded-full bg-indigo-400" />
+                <div className="absolute bottom-[15%] left-[20%] w-1.5 h-1.5 rounded-full bg-fuchsia-400" />
+              </div>
+
+              {/* Floating Badges */}
+              {/* Top Left - Brain */}
+              <div className="absolute top-[5%] left-[15%] w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white dark:bg-slate-900 shadow-xl flex items-center justify-center text-purple-600 dark:text-purple-400 z-10 animate-[bounce_3s_ease-in-out_infinite]">
+                <Brain className="w-6 h-6 sm:w-8 sm:h-8" />
+              </div>
+              
+              {/* Top Right - BarChart */}
+              <div className="absolute top-[-2%] right-[15%] w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white dark:bg-slate-900 shadow-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 z-10 animate-[bounce_4s_ease-in-out_infinite_0.5s]">
+                <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6" />
+              </div>
+
+              {/* Right - Database */}
+              <div className="absolute top-[30%] right-[-5%] sm:right-[-8%] w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white dark:bg-slate-900 shadow-xl flex items-center justify-center text-fuchsia-600 dark:text-fuchsia-400 z-10 animate-[bounce_3.5s_ease-in-out_infinite_1s]">
+                <Database className="w-6 h-6 sm:w-8 sm:h-8" />
+              </div>
+
+              {/* Bottom Right - Network */}
+              <div className="absolute bottom-[15%] right-[5%] sm:right-[10%] w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white dark:bg-slate-900 shadow-xl flex items-center justify-center text-purple-600 dark:text-purple-400 z-10 animate-[bounce_4s_ease-in-out_infinite_0.8s]">
+                <Network className="w-5 h-5 sm:w-7 sm:h-7" />
+              </div>
+
+              {/* Bottom - Bot */}
+              <div className="absolute bottom-[-5%] left-[45%] w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white dark:bg-slate-900 shadow-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 z-10 animate-[bounce_3s_ease-in-out_infinite_1.2s]">
+                <Bot className="w-6 h-6 sm:w-8 sm:h-8" />
+              </div>
+
+              {/* Bottom Left - Code */}
+              <div className="absolute bottom-[15%] left-[0%] sm:left-[5%] w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white dark:bg-slate-900 shadow-xl flex items-center justify-center text-purple-600 dark:text-purple-400 z-10 animate-[bounce_4s_ease-in-out_infinite_0.3s]">
+                <Code className="w-5 h-5 sm:w-7 sm:h-7" />
+              </div>
+
+              {/* Left - Search */}
+              <div className="absolute top-[35%] left-[-8%] sm:left-[-12%] w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white dark:bg-slate-900 shadow-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 z-10 animate-[bounce_3.5s_ease-in-out_infinite_0.7s]">
+                <Search className="w-6 h-6 sm:w-8 sm:h-8" />
+              </div>
+
+              {/* Central Profile Picture (Double Ring Design) */}
+              <div className="absolute w-52 h-52 sm:w-64 sm:h-64 lg:w-72 lg:h-72 rounded-full p-[3px] sm:p-[4px] bg-gradient-to-tr from-purple-500 via-fuchsia-400 to-indigo-400 shadow-[0_0_50px_rgba(168,85,247,0.25)] group-hover:shadow-[0_0_70px_rgba(168,85,247,0.4)] transition-shadow duration-500 z-0">
+                {/* Inner White Gap */}
+                <div className="w-full h-full rounded-full bg-white dark:bg-[#07060F] flex items-center justify-center p-[6px] sm:p-[8px]">
+                  {/* Image Container */}
+                  <div className="w-full h-full rounded-full overflow-hidden relative shadow-inner bg-slate-100 dark:bg-slate-800">
+                    <img 
+                      src="https://ik.imagekit.io/njxa1mbn3/SM.png" 
+                      alt="Spurthi Mulkanuri" 
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      referrerPolicy="no-referrer"
+                    />
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
 

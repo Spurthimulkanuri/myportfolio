@@ -200,6 +200,16 @@ export default function ProjectDetail({ projectId, onBack }: ProjectDetailProps)
                     {isCounselor ? 'HuggingFace PEFT QLoRA' : 'LangChain / FAISS Vectors'}
                   </div>
                 </div>
+                {project.githubLink && (
+                  <div className="pt-2">
+                    <span className="text-xs text-slate-400 font-medium font-sans">Source Code Repository</span>
+                    <div>
+                      <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="text-sm font-mono font-bold text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-1">
+                        View on GitHub <ArrowLeft className="w-3.5 h-3.5 rotate-135" />
+                      </a>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -17,7 +17,7 @@ export default function Achievements() {
   };
 
   return (
-    <section id="achievements" className="py-24 bg-white relative overflow-hidden">
+    <section id="achievements" className="py-24 bg-white/30 dark:bg-slate-900/20 backdrop-blur-[2px] relative overflow-hidden">
       {/* Dynamic blob background elements */}
       <div className="absolute top-1/4 right-10 w-80 h-80 bg-blue-50/40 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-teal-50/30 rounded-full blur-3xl -z-10" />

@@ -10,11 +10,10 @@ export const PERSONAL_INFO = {
     'Python Developer',
     'Data Analyst'
   ],
-  bio: 'Determined and analytical Aspiring Data Scientist and Generative AI developer with hands-on intern experience implementing clean data preprocessing engines, fine-tuning large language models on targeted datasets, and designing intelligent AI pipelines. Passionate about solving real-world challenges through statistical modeling, clean data visualization, and user-centric generative systems.',
+  bio: 'Determined Aspiring Data Scientist & AI Developer. Experienced in data preprocessing, LLM fine-tuning, and building end-to-end intelligent pipelines to turn complex data into actionable solutions.',
   email: 'spurthi.mulkanuri@gmail.com', // Recruiter-ready placeholder or standard format
-  phone: '+91 9177112003', // Recruiter-friendly phone format
-  github: 'https://github.com/SpurthiMulkanuri',
-  linkedin: 'https://linkedin.com/in/spurthi-mulkanuri-ds',
+  github: 'https://github.com/Spurthimulkanuri',
+  linkedin: 'https://linkedin.com/in/spurthimulkanuri',
   location: 'Telangana, India'
 };
 
@@ -114,7 +113,9 @@ export const PROJECTS_DATA: Project[] = [
     futureScope: [
       'Build a fully responsive web interface linking to localized mental health clinics and verified counseling circles.',
       'Extend testing benchmarks using expert clinical matrices to score support levels.'
-    ]
+    ],
+    githubLink: 'https://github.com/Spurthimulkanuri/Ai-Mental-Health-Counsellor-BagavadGita-llm',
+    image: '/ai_counselor.png'
   },
   {
     id: 'social-to-lead',
@@ -149,7 +150,9 @@ export const PROJECTS_DATA: Project[] = [
     futureScope: [
       'Deploy direct integrations with messaging channels like WhatsApp and Telegram using webhook gateways.',
       'Introduce voice transcription to support natural, vocal sales queries.'
-    ]
+    ],
+    githubLink: 'https://github.com/Spurthimulkanuri/ServiceHiveAssignment',
+    image: '/ai_chatbot.png'
   }
 ];
 

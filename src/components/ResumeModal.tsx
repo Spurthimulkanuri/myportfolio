@@ -13,7 +13,7 @@ export default function ResumeModal({ onClose }: ResumeModalProps) {
     const resumeText = `
 ${PERSONAL_INFO.name}
 ${PERSONAL_INFO.primaryRole}
-Email: ${PERSONAL_INFO.email} | Phone: ${PERSONAL_INFO.phone} | Location: ${PERSONAL_INFO.location}
+Email: ${PERSONAL_INFO.email} | Location: ${PERSONAL_INFO.location}
 
 SUMMARY:
 ${PERSONAL_INFO.bio}
@@ -88,10 +88,7 @@ ${EXPERIENCE_DATA.bullets.map(b => `- ${b}`).join('\n')}
                 <Mail className="w-3.5 h-3.5 text-blue-500" />
                 {PERSONAL_INFO.email}
               </span>
-              <span className="flex items-center justify-center sm:justify-end gap-1.5 leading-none">
-                <Phone className="w-3.5 h-3.5 text-teal-500" />
-                {PERSONAL_INFO.phone}
-              </span>
+
               <span className="flex items-center justify-center sm:justify-end gap-1.5 leading-none">
                 <MapPin className="w-3.5 h-3.5 text-indigo-500" />
                 {PERSONAL_INFO.location}

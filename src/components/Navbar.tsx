@@ -54,11 +54,16 @@ export default function Navbar({ onNavigate, activeSection, onOpenResume, isProj
       id="navbar"
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-white/85 dark:bg-[#07060F]/85 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-gray-800 py-3'
-          : 'bg-transparent py-5'
+          ? 'bg-white/95 dark:bg-[#07060F]/95 backdrop-blur-md shadow-md py-3'
+          : 'bg-white/40 dark:bg-[#07060F]/20 backdrop-blur-xs py-5'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Dynamic bottom border line for high visibility */}
+      <div className={`absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 transition-opacity duration-300 ${
+        isScrolled ? 'opacity-90' : 'opacity-30'
+      }`} />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex justify-between items-center">
           
           {/* Logo - Cursive 3D brand logo as requested */}
@@ -96,14 +101,15 @@ export default function Navbar({ onNavigate, activeSection, onOpenResume, isProj
 
           {/* Download Resume Block */}
           <div className="hidden md:flex items-center gap-3">
-            <button
-              onClick={onOpenResume}
+            <a
+              href="/SPURTHI_RESUME_DATASCIENCE_.pdf"
+              download="Spurthi_Resume.pdf"
               id="btn-resume-download"
               className="px-5 py-2 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white font-sans text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md hover:shadow-lg hover:brightness-110 active:scale-95 transition-all duration-300 group cursor-pointer"
             >
               <FileText className="w-4 h-4 group-hover:rotate-6 transition-transform" />
               <span>Download Resume</span>
-            </button>
+            </a>
             
             {/* Functional theme toggler */}
             <button
@@ -132,14 +138,15 @@ export default function Navbar({ onNavigate, activeSection, onOpenResume, isProj
                 <Moon className="w-4 h-4 text-purple-600" />
               )}
             </button>
-            <button
-              onClick={onOpenResume}
+            <a
+              href="/SPURTHI_RESUME_DATASCIENCE_.pdf"
+              download="Spurthi_Resume.pdf"
               id="btn-resume-download-mobile"
               className="p-1.5 rounded-full bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 text-purple-600 dark:text-purple-400 border border-purple-100/60 dark:border-purple-900/40 hover:bg-purple-100 dark:hover:bg-purple-900/10 transition-colors"
               title="Download Resume"
             >
               <FileText className="w-4 h-4" />
-            </button>
+            </a>
             <button
               onClick={() => setIsOpen(!isOpen)}
               id="btn-hamburger"
