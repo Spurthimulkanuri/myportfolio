@@ -37,6 +37,7 @@ import { PERSONAL_INFO, SKILLS_DATA, PROJECTS_DATA, EXPERIENCE_DATA, CERTIFICATI
 import { Project } from './types';
 import Navbar from './components/Navbar';
 import Skills from './components/Skills';
+import Loader from './components/Loader';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
@@ -73,6 +74,50 @@ export default function App() {
   const [transmissionStep, setTransmissionStep] = useState(0);
   const [downloadingResume, setDownloadingResume] = useState(false);
   const [resumeDownloadStep, setResumeDownloadStep] = useState(0);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [loadingLog, setLoadingLog] = useState("Initializing neural networks...");
+  const [loadingProgress, setLoadingProgress] = useState(0);
+
+  // Initial snappy loading screen animation timer
+  useEffect(() => {
+    const logs = [
+      "Initializing neural networks...",
+      "Resolving data science matrices...",
+      "Mapping deep learning CNN models...",
+      "Emplacing Spurthi's core profile metrics...",
+      "Configuring local responsive interfaces...",
+      "Optimizing. Deploying portfolio secure gate..."
+    ];
+    let logsIdx = 0;
+    const logInterval = setInterval(() => {
+      if (logsIdx < logs.length - 1) {
+        logsIdx++;
+        setLoadingLog(logs[logsIdx]);
+      }
+    }, 280);
+
+    const progressInterval = setInterval(() => {
+      setLoadingProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+        return Math.min(prev + Math.floor(Math.random() * 15) + 5, 100);
+      });
+    }, 120);
+
+    const timer = setTimeout(() => {
+      setInitialLoading(false);
+      clearInterval(logInterval);
+      clearInterval(progressInterval);
+    }, 1800);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(logInterval);
+      clearInterval(progressInterval);
+    };
+  }, []);
 
   // Role cycler logic
   useEffect(() => {
@@ -213,7 +258,31 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF9FC] dark:bg-[#07060F] text-[#1E293B] dark:text-[#E2E8F0] font-sans selection:bg-purple-100 dark:selection:bg-purple-900 selection:text-purple-950 dark:selection:text-purple-100 overflow-x-hidden transition-colors duration-300">
+    <AnimatePresence mode="wait">
+      {initialLoading ? (
+        <motion.div
+          key="loader"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0, scale: 0.98, filter: "blur(8px)" }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
+          className="fixed inset-0 bg-white z-[99999] flex flex-col items-center justify-center p-6 select-none overflow-hidden"
+        >
+          {/* Ambient subtle lighting */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full bg-purple-500/5 blur-[120px] pointer-events-none" />
+          
+          <div className="relative flex items-center justify-center">
+            {/* The Custom Loader SVG component */}
+            <Loader />
+          </div>
+        </motion.div>
+      ) : (
+        <motion.div
+          key="content"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="min-h-screen bg-[#FAF9FC] dark:bg-[#07060F] text-[#1E293B] dark:text-[#E2E8F0] font-sans selection:bg-purple-100 dark:selection:bg-purple-900 selection:text-purple-950 dark:selection:text-purple-100 overflow-x-hidden transition-colors duration-300"
+        >
       {/* Dynamic decorative visual glow rings for high premium texture */}
       <div className="absolute top-0 left-0 w-full h-[650px] overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-5%] right-[-5%] w-[550px] h-[550px] rounded-full bg-purple-200/40 dark:bg-purple-950/10 blur-[130px] transition-colors duration-300" />
@@ -239,7 +308,13 @@ export default function App() {
              ========================================================================= */
           <main>
             {/* HERO SECTION */}
-            <section id="home" className="relative min-h-[calc(100vh-80px)] flex items-center py-10 md:py-16 z-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <motion.section 
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              id="home" 
+              className="relative min-h-[calc(100vh-80px)] flex items-center py-10 md:py-16 z-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
+            >
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center w-full">
                 
                 {/* Hero left content column */}
@@ -366,8 +441,8 @@ export default function App() {
                   </div>
 
                   {/* Main Portrait Frame with customized vector illustrations */}
-                  <div className="relative w-[280px] sm:w-[320px] h-[280px] sm:h-[320px] rounded-full bg-gradient-to-tr from-purple-500/20 via-pink-400/10 to-blue-500/20 p-2 shadow-2xl animate-float">
-                    <div className="w-full h-full rounded-full bg-white overflow-hidden relative border-4 border-white flex flex-col justify-center items-center">
+                  <div className="relative w-[280px] sm:w-[320px] h-[280px] sm:h-[320px] rounded-full bg-gradient-to-tr from-purple-500/20 via-pink-400/10 to-blue-500/20 p-1 shadow-2xl animate-float">
+                    <div className="w-full h-full rounded-full bg-white overflow-hidden relative border-2 border-white flex flex-col justify-center items-center">
                       <div className="absolute inset-0 bg-gradient-to-b from-purple-50/10 via-white/5 to-purple-50/60" />
                       
                       {/* Premium Portrait Art Illustration */}
@@ -378,6 +453,18 @@ export default function App() {
                             <span className="text-4xl sm:text-5xl font-extrabold tracking-tight">SM</span>
                             <span className="text-[10px] sm:text-xs font-mono tracking-wider font-semibold opacity-90 mt-1">DATA SCIENCE</span>
                           </div>
+                          
+                          {/* Real-life Profile Image Overlay */}
+                          <img 
+                            src="https://ik.imagekit.io/njxa1mbn3/SM.png" 
+                            alt="Spurthi" 
+                            referrerPolicy="no-referrer"
+                            className="absolute inset-0 w-full h-full object-cover z-10 transition-transform duration-500 hover:scale-105"
+                            onError={(e) => {
+                              // If image fails to load, gracefully hide this element to show fallback underneath
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
                         </div>
                       </div>
 
@@ -460,11 +547,17 @@ export default function App() {
                 </div>
 
               </div>
-            </section>
+            </motion.section>
 
             <div className="font-remaining">
               {/* WHAT I DO SECTION - Pristine styled white horizontal blocks matching image */}
-            <section className="py-14 bg-[#FAF9FC] relative z-10 border-t border-gray-200/50">
+            <motion.section 
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-120px" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="py-14 bg-[#FAF9FC] relative z-10 border-t border-gray-200/50"
+            >
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
                 {/* Image-accurate title layout */}
@@ -482,7 +575,11 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                   
                   {/* Card 1: Data Analysis */}
-                  <div className="bg-white rounded-2xl border border-gray-150 p-5 flex items-center gap-4 hover:shadow-md transition-all duration-300">
+                  <motion.div 
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                    className="bg-white rounded-2xl border border-gray-150 p-5 flex items-center gap-4 hover:shadow-md transition-all duration-300"
+                  >
                     <div className="w-12 h-12 rounded-xl bg-orange-50 border border-orange-100 text-orange-500 flex items-center justify-center shrink-0 shadow-xs">
                       <Database className="w-5.5 h-5.5" />
                     </div>
@@ -490,10 +587,14 @@ export default function App() {
                       <h3 className="font-display font-extrabold text-[#1E293B] text-sm tracking-tight">Data Analysis</h3>
                       <p className="text-xs text-gray-500 font-medium mt-0.5 leading-snug">Extracting meaningful insights and strategic matrices from unstructured data.</p>
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Card 2: Machine Learning */}
-                  <div className="bg-white rounded-2xl border border-gray-150 p-5 flex items-center gap-4 hover:shadow-md transition-all duration-300">
+                  <motion.div 
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                    className="bg-white rounded-2xl border border-gray-150 p-5 flex items-center gap-4 hover:shadow-md transition-all duration-300"
+                  >
                     <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-105 text-blue-500 flex items-center justify-center shrink-0 shadow-xs">
                       <Cpu className="w-5.5 h-5.5 animate-pulse" />
                     </div>
@@ -501,10 +602,14 @@ export default function App() {
                       <h3 className="font-display font-extrabold text-[#1E293B] text-sm tracking-tight">Machine Learning</h3>
                       <p className="text-xs text-gray-500 font-medium mt-0.5 leading-snug">Building and scaling robust predictive models that make tangible impact.</p>
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Card 3: Deep Learning */}
-                  <div className="bg-white rounded-2xl border border-gray-150 p-5 flex items-center gap-4 hover:shadow-md transition-all duration-300">
+                  <motion.div 
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                    className="bg-white rounded-2xl border border-gray-150 p-5 flex items-center gap-4 hover:shadow-md transition-all duration-300"
+                  >
                     <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-105 text-purple-500 flex items-center justify-center shrink-0 shadow-xs">
                       <Layers className="w-5.5 h-5.5" />
                     </div>
@@ -512,10 +617,14 @@ export default function App() {
                       <h3 className="font-display font-extrabold text-[#1E293B] text-sm tracking-tight">Deep Learning</h3>
                       <p className="text-xs text-gray-500 font-medium mt-0.5 leading-snug">Creating deep intelligent models, spatial neural layers, and sequential NLP.</p>
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Card 4: Generative AI */}
-                  <div className="bg-white rounded-2xl border border-gray-150 p-5 flex items-center gap-4 hover:shadow-md transition-all duration-300">
+                  <motion.div 
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                    className="bg-white rounded-2xl border border-gray-150 p-5 flex items-center gap-4 hover:shadow-md transition-all duration-300"
+                  >
                     <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-110 text-emerald-600 flex items-center justify-center shrink-0 shadow-xs">
                       <Sparkles className="w-5.5 h-5.5" />
                     </div>
@@ -523,10 +632,14 @@ export default function App() {
                       <h3 className="font-display font-extrabold text-[#1E293B] text-sm tracking-tight">Generative AI</h3>
                       <p className="text-xs text-gray-500 font-medium mt-0.5 leading-snug">Exploring fine-tunes, context RAG frameworks, and prompt logic models.</p>
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Card 5: Visualization */}
-                  <div className="bg-white rounded-2xl border border-gray-150 p-5 flex items-center gap-4 hover:shadow-md transition-all duration-300">
+                  <motion.div 
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                    className="bg-white rounded-2xl border border-gray-150 p-5 flex items-center gap-4 hover:shadow-md transition-all duration-300"
+                  >
                     <div className="w-12 h-12 rounded-xl bg-pink-50 border border-pink-105 text-pink-500 flex items-center justify-center shrink-0 shadow-xs">
                       <BarChart2 className="w-5.5 h-5.5" />
                     </div>
@@ -534,10 +647,14 @@ export default function App() {
                       <h3 className="font-display font-extrabold text-[#1E293B] text-sm tracking-tight">Visualization</h3>
                       <p className="text-xs text-gray-500 font-medium mt-0.5 leading-snug">Converting highly nested query response parameters into stellar visuals.</p>
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Card 6: Problem Solving */}
-                  <div className="bg-white rounded-2xl border border-gray-150 p-5 flex items-center gap-4 hover:shadow-md transition-all duration-300">
+                  <motion.div 
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                    className="bg-white rounded-2xl border border-gray-150 p-5 flex items-center gap-4 hover:shadow-md transition-all duration-300"
+                  >
                     <div className="w-12 h-12 rounded-xl bg-yellow-50 border border-yellow-105 text-yellow-600 flex items-center justify-center shrink-0 shadow-xs">
                       <Target className="w-5.5 h-5.5" />
                     </div>
@@ -545,15 +662,22 @@ export default function App() {
                       <h3 className="font-display font-extrabold text-[#1E293B] text-sm tracking-tight">Problem Solving</h3>
                       <p className="text-xs text-gray-500 font-medium mt-0.5 leading-snug">Solving actual complex problems via math algorithms and efficient script logic.</p>
                     </div>
-                  </div>
+                  </motion.div>
 
                 </div>
 
               </div>
-            </section>
+            </motion.section>
 
             {/* FEATURED PROJECTS SECTION - Highly styled cards replicating image styling */}
-            <section id="projects" className="py-20 bg-white relative z-10 border-t border-gray-150">
+            <motion.section 
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-120px" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              id="projects" 
+              className="py-20 bg-white relative z-10 border-t border-gray-150"
+            >
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
                 {/* Title and Right-aligned clicker button */}
@@ -898,13 +1022,20 @@ export default function App() {
                 </div>
 
               </div>
-            </section>
+            </motion.section>
 
             {/* SKILLS SECTION */}
             <Skills isDarkMode={isDarkMode} />
 
             {/* EXPERIENCE SECTION - Hybrid modern card timeline */}
-            <section id="experience" className="py-20 bg-white relative z-10 border-b border-gray-200/50">
+            <motion.section 
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-120px" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              id="experience" 
+              className="py-20 bg-white relative z-10 border-b border-gray-200/50"
+            >
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
                 {/* Section Header */}
@@ -998,10 +1129,16 @@ export default function App() {
                 </div>
 
               </div>
-            </section>
+            </motion.section>
 
             {/* CERTIFICATIONS & ACHIEVEMENTS BENTO */}
-            <section className="py-20 bg-[#FAF9FC] relative z-10">
+            <motion.section 
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-120px" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="py-20 bg-[#FAF9FC] relative z-10"
+            >
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -1091,10 +1228,17 @@ export default function App() {
                 </div>
 
               </div>
-            </section>
+            </motion.section>
 
             {/* CONTACT MESSAGE PORTAL */}
-            <section id="contact" className="py-24 bg-white dark:bg-[#070611] relative z-10 border-t border-gray-150 dark:border-purple-950/20 transition-colors duration-300 overflow-hidden">
+            <motion.section 
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-120px" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              id="contact" 
+              className="py-24 bg-white dark:bg-[#070611] relative z-10 border-t border-gray-150 dark:border-purple-950/20 transition-colors duration-300 overflow-hidden"
+            >
               {/* Modern ambient backdrop glows */}
               <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-purple-500/5 dark:bg-purple-500/1 pointer-events-none blur-3xl rounded-full" />
               <div className="absolute bottom-10 right-1/4 w-80 h-80 bg-teal-500/5 dark:bg-teal-500/1 pointer-events-none blur-3xl rounded-full" />
@@ -1371,7 +1515,7 @@ export default function App() {
                 </div>
 
               </div>
-            </section>
+            </motion.section>
             </div>
           </main>
         ) : (
@@ -2070,7 +2214,9 @@ export default function App() {
         </div>
       </div>
 
-    </div>
+    </motion.div>
+    )}
+    </AnimatePresence>
   );
 
   // Wrapper handles transition tracking

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BookOpen, Rocket, ShieldAlert, Award, Globe, Code, Layers, Cpu, Sparkles, Binary, FileSpreadsheet, LayoutGrid } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface SkillsProps {
   isDarkMode?: boolean;
@@ -7,7 +8,14 @@ interface SkillsProps {
 
 export default function Skills({ isDarkMode }: SkillsProps) {
   return (
-    <section id="skills" className="py-24 bg-[#FAF9FC] dark:bg-[#070613] relative overflow-hidden z-10 select-none transition-colors duration-300">
+    <motion.section 
+      initial={{ opacity: 0, y: 35 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-120px" }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      id="skills" 
+      className="py-24 bg-[#FAF9FC] dark:bg-[#070613] relative overflow-hidden z-10 select-none transition-colors duration-300"
+    >
       
       {/* Background ambient light circles for that modern premium glow */}
       <div className="absolute top-1/4 -left-20 w-80 h-80 rounded-full bg-purple-500/5 dark:bg-purple-500/3 blur-3xl pointer-events-none" />
@@ -559,7 +567,7 @@ export default function Skills({ isDarkMode }: SkillsProps) {
         </div>
 
       </div>
-    </section>
+    </motion.section>
   );
 }
 

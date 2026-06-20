@@ -68,9 +68,6 @@ export default function Navbar({ onNavigate, activeSection, onOpenResume, isProj
             <span className="text-3xl font-cursive tracking-normal bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 bg-clip-text text-transparent filter drop-shadow-[0.5px_1px_1px_rgba(168,85,247,0.15)] group-hover:scale-105 transition-transform duration-300">
               Spurthi
             </span>
-            <span className="text-2xl font-light font-sans text-gray-400 dark:text-gray-500 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors ml-1">
-              Mulkanuri
-            </span>
           </div>
 
           {/* Desktop Nav Links */}
