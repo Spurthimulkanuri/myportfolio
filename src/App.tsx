@@ -36,12 +36,14 @@ import {
 } from 'lucide-react';
 import { PERSONAL_INFO, SKILLS_DATA, PROJECTS_DATA, EXPERIENCE_DATA, CERTIFICATIONS_DATA, ACHIEVEMENTS_DATA } from './data';
 import { Project } from './types';
+import { useForm, ValidationError } from '@formspree/react';
 import Navbar from './components/Navbar';
 import Skills from './components/Skills';
 import Loader from './components/Loader';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
+  const [formspreeState, handleFormspreeSubmit] = useForm('xzdlpoba');
   const [activeSection, setActiveSection] = useState('home');
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -1906,7 +1908,7 @@ export default function App() {
 
                       {/* Success Alert Overlay inside the card */}
                       <AnimatePresence>
-                        {formSubmitted && (
+                        {formspreeState.succeeded && (
                           <motion.div 
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -1947,16 +1949,15 @@ export default function App() {
                         <p className="text-xs text-gray-400 dark:text-gray-400 mt-1 font-medium italic">Message requests are parsed via localized regex checks.</p>
                       </div>
 
-                      <form onSubmit={handleContactSubmit} className="space-y-4 pt-6">
+                      <form onSubmit={handleFormspreeSubmit} className="space-y-4 pt-6">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="space-y-1.5">
                             <label className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest font-mono">Your Name *</label>
                             <input 
                               type="text" 
+                              name="name"
                               required
                               placeholder="Name"
-                              value={formState.name}
-                              onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-purple-950/30 bg-white dark:bg-[#13112c]/45 focus:border-purple-500 dark:focus:border-purple-500 focus:ring-2 focus:ring-purple-105 dark:focus:ring-purple-950/40 outline-none text-xs sm:text-sm font-semibold transition-all text-gray-900 dark:text-white"
                             />
                           </div>
@@ -1965,12 +1966,12 @@ export default function App() {
                             <label className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest font-mono">Email Address *</label>
                             <input 
                               type="email" 
+                              name="email"
                               required
                               placeholder="Email"
-                              value={formState.email}
-                              onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-purple-950/30 bg-white dark:bg-[#13112c]/45 focus:border-purple-500 dark:focus:border-purple-500 focus:ring-2 focus:ring-purple-105 dark:focus:ring-purple-950/40 outline-none text-xs sm:text-sm font-semibold transition-all text-gray-900 dark:text-white"
                             />
+                            <ValidationError prefix="Email" field="email" errors={formspreeState.errors} className="text-xs text-red-500 mt-1" />
                           </div>
                         </div>
 
@@ -1978,9 +1979,8 @@ export default function App() {
                           <label className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest font-mono">Affiliation / Organization</label>
                           <input 
                             type="text" 
+                            name="company"
                             placeholder="e.g. Swinfy Solutions"
-                            value={formState.company}
-                            onChange={(e) => setFormState({ ...formState, company: e.target.value })}
                             className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-purple-950/30 bg-white dark:bg-[#13112c]/45 focus:border-purple-500 dark:focus:border-purple-500 focus:ring-2 focus:ring-purple-105 dark:focus:ring-purple-950/40 outline-none text-xs sm:text-sm font-semibold transition-all text-gray-900 dark:text-white"
                           />
                         </div>
@@ -1989,17 +1989,17 @@ export default function App() {
                           <label className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest font-mono">Message Scope *</label>
                           <textarea 
                             rows={4}
+                            name="message"
                             required
                             placeholder="State collaboration requirements..."
-                            value={formState.message}
-                            onChange={(e) => setFormState({ ...formState, message: e.target.value })}
                             className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-purple-950/30 bg-white dark:bg-[#13112c]/45 focus:border-purple-500 dark:focus:border-purple-500 focus:ring-2 focus:ring-purple-105 dark:focus:ring-purple-950/40 outline-none text-xs sm:text-sm font-semibold transition-all resize-none text-gray-900 dark:text-white"
                           />
+                          <ValidationError prefix="Message" field="message" errors={formspreeState.errors} className="text-xs text-red-500 mt-1" />
                         </div>
 
                         <button
                           type="submit"
-                          disabled={submitting}
+                          disabled={formspreeState.submitting}
                           id="btn-contact-submit"
                           className="w-full py-3 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white font-bold text-xs sm:text-sm tracking-wide uppercase flex items-center justify-center gap-2 shadow-sm hover:shadow-md hover:brightness-110 duration-300 transition-all cursor-pointer disabled:opacity-75 disabled:pointer-events-none text-center"
                         >

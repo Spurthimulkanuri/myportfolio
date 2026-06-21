@@ -1,14 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&family=Pacifico&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&family=Pacifico&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", "Inter", sans-serif;
-  --font-display: "Plus Jakarta Sans", "Inter", sans-serif;
-  --font-hero-display: "Syne", "Outfit", sans-serif;
+  --font-sans: "Outfit", "Inter", sans-serif;
+  --font-display: "Outfit", "Inter", sans-serif;
+  --font-hero-sans: "Plus Jakarta Sans", "Inter", sans-serif;
+  --font-hero-display: "Plus Jakarta Sans", "Inter", sans-serif;
   --font-cursive: "Pacifico", cursive;
   --font-mono: "JetBrains Mono", monospace;
-  --font-remaining: "Inter", sans-serif;
-  --font-remaining-display: "Inter", sans-serif;
+  --font-remaining: "Outfit", sans-serif;
+  --font-remaining-display: "Outfit", sans-serif;
   
   --color-brand-primary: #8b5cf6; /* Vibrant violet */
   --color-brand-secondary: #06b6d4; /* Teal */
@@ -123,9 +124,9 @@
   background: linear-gradient(145deg, #1e293b, #0f172a);
 }
 
-/* Custom class to force Google Fonts Inter on remaining sections */
+/* Custom class to force Google Fonts Outfit on remaining sections */
 .font-remaining {
-  font-family: "Inter", sans-serif;
+  font-family: "Outfit", sans-serif;
 }
 
 .font-remaining h1,
@@ -136,7 +137,7 @@
 .font-remaining h6,
 .font-remaining .font-display,
 .font-remaining [class*="font-display"] {
-  font-family: "Inter", sans-serif !important;
+  font-family: "Outfit", sans-serif !important;
 }
 
 .font-remaining p,
@@ -149,7 +150,7 @@
 .font-remaining li,
 .font-remaining label,
 .font-remaining div:not(.font-mono):not(.font-cursive):not(.font-hero-display) {
-  font-family: "Inter", sans-serif;
+  font-family: "Outfit", sans-serif;
 }
 
 /* Ensure monospaced fonts and cursive layouts are correctly preserved */

@@ -115,7 +115,7 @@ export const PROJECTS_DATA: Project[] = [
       'Extend testing benchmarks using expert clinical matrices to score support levels.'
     ],
     githubLink: 'https://github.com/Spurthimulkanuri/Ai-Mental-Health-Counsellor-BagavadGita-llm',
-    image: '/ai_counselor.png'
+    image: '/ai_counselor_ui.png'
   },
   {
     id: 'social-to-lead',
@@ -152,7 +152,7 @@ export const PROJECTS_DATA: Project[] = [
       'Introduce voice transcription to support natural, vocal sales queries.'
     ],
     githubLink: 'https://github.com/Spurthimulkanuri/ServiceHiveAssignment',
-    image: '/ai_chatbot.png'
+    image: '/ai_chatbot_ui.png'
   }
 ];
 

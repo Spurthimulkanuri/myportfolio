@@ -72,13 +72,13 @@ export default function Hero({ onViewProjects, onContactMe }: HeroProps) {
 
             {/* Headline */}
             <div className="space-y-3 w-full">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-display font-extrabold text-slate-900 tracking-tight leading-none">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-hero-display font-extrabold text-slate-900 tracking-tight leading-none">
                 Hi, I'm <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-teal-500">{PERSONAL_INFO.name}</span>
               </h1>
               
               {/* Cycling animated text */}
               <div className="h-10 sm:h-12 flex items-center">
-                <span className="text-xl sm:text-2xl md:text-3xl font-display font-semibold text-slate-800">
+                <span className="text-xl sm:text-2xl md:text-3xl font-hero-display font-semibold text-slate-800">
                   {typedText}
                   <span className="border-r-2 border-indigo-600 ml-1 text-indigo-600"></span>
                 </span>
@@ -86,7 +86,7 @@ export default function Hero({ onViewProjects, onContactMe }: HeroProps) {
             </div>
 
             {/* Short Introduction */}
-            <p className="text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed font-sans">
+            <p className="text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed font-hero-sans">
               {PERSONAL_INFO.bio}
             </p>
 
@@ -94,19 +94,19 @@ export default function Hero({ onViewProjects, onContactMe }: HeroProps) {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full pt-4">
               <div className="p-3.5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
                 <span className="text-blue-600 font-mono font-bold text-lg">11,000+</span>
-                <span className="text-xs text-slate-500 font-medium font-sans">Records Preprocessed</span>
+                <span className="text-xs text-slate-500 font-medium font-hero-sans">Records Preprocessed</span>
               </div>
               <div className="p-3.5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
                 <span className="text-teal-600 font-mono font-bold text-lg">AI / ML</span>
-                <span className="text-xs text-slate-500 font-medium font-sans">Project Pipelines</span>
+                <span className="text-xs text-slate-500 font-medium font-hero-sans">Project Pipelines</span>
               </div>
               <div className="p-3.5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
                 <span className="text-indigo-600 font-mono font-bold text-lg">SQL | Python</span>
-                <span className="text-xs text-slate-500 font-medium font-sans">Robust Scripting</span>
+                <span className="text-xs text-slate-500 font-medium font-hero-sans">Robust Scripting</span>
               </div>
               <div className="p-3.5 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
                 <span className="text-purple-600 font-mono font-bold text-lg">Fine-Tuned</span>
-                <span className="text-xs text-slate-500 font-medium font-sans">7B Param LLMs</span>
+                <span className="text-xs text-slate-500 font-medium font-hero-sans">7B Param LLMs</span>
               </div>
             </div>
 
@@ -114,7 +114,7 @@ export default function Hero({ onViewProjects, onContactMe }: HeroProps) {
             <div className="flex flex-wrap gap-4 w-full pt-4">
               <button
                 onClick={onViewProjects}
-                className="px-6 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-sans font-semibold text-sm shadow-md hover:shadow-xl hover:translate-y-[-1px] transition-all duration-300 flex items-center gap-2 group cursor-pointer"
+                className="px-6 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-hero-sans font-semibold text-sm shadow-md hover:shadow-xl hover:translate-y-[-1px] transition-all duration-300 flex items-center gap-2 group cursor-pointer"
                 id="hero-cta-projects"
               >
                 <span>Discover Projects</span>
@@ -122,7 +122,7 @@ export default function Hero({ onViewProjects, onContactMe }: HeroProps) {
               </button>
               <button
                 onClick={onContactMe}
-                className="px-6 py-4 rounded-xl bg-white text-slate-800 border border-slate-200 font-sans font-semibold text-sm shadow-sm hover:bg-slate-50 hover:border-slate-300 hover:translate-y-[-1px] transition-all duration-300 flex items-center justify-center cursor-pointer"
+                className="px-6 py-4 rounded-xl bg-white text-slate-800 border border-slate-200 font-hero-sans font-semibold text-sm shadow-sm hover:bg-slate-50 hover:border-slate-300 hover:translate-y-[-1px] transition-all duration-300 flex items-center justify-center cursor-pointer"
                 id="hero-cta-contact"
               >
                 Contact Me
